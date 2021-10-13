@@ -1,0 +1,9 @@
+[submodule "back"]
+	path = back
+	url = ../back
+[submodule "front"]
+	path = front
+	url = ../front
+[submodule "e2e"]
+	path = e2e
+	url = ../e2e

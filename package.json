@@ -1,0 +1,15 @@
+{
+  "name": "standalone-local",
+  "version": "0.1.0",
+  "description": "A package to run all odyssée back alltogether",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Arthur CARLI",
+  "license": "MIT",
+  "dependencies": {
+    "simple-git": "^1.107.0",
+    "vorpal": "^1.12.0"
+  }
+}
