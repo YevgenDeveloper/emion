@@ -1,0 +1,107 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type":"object",
+    "definitions": {
+        "executionEnvironement": {
+            "type":"object",
+            "description": "An environement to lauchn with a command, the definition of its readyness condition and some optional dependencies",
+            "properties": {
+                "command": {
+                    "type":"string"
+                },
+                "arguments": {
+                    "type":"array",
+                    "items": {
+                        "type":"string"
+                    }
+                },
+                "readyWhen": {
+                    "description": "The condition to assume the environement is ready",
+                    "oneOf": [{
+                        "type":"object",
+                        "description": "The environement is ready when the port is up",
+                        "additionalProperties": false,
+                        "required": ["portIsUp"],
+                        "properties": {
+                            "portIsUp": {
+                                "type":"number"
+                            }
+                        }
+                    },
+                    {
+                        "type":"object",
+                        "additionalProperties": false,
+                        "description": "The environement is ready when the message (containing the port '${port}') is found",
+                        "required": ["consoleMessageIsFound"],
+                        "properties": {
+                            "consoleMessageIsFound": {
+                                "type":"string"
+                            }
+                        }
+                    }]
+                },
+                "dependsOn":{
+                    "type":"array",
+                    "items": {
+                     "type":"string"
+                    }
+                }
+            }
+        },
+        "repo_config":{
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "url": {
+                    "type":"string"
+                },
+                "initCommand": {
+                    "description": "The command to be launched to initialize the repo",
+                    "type": "string"
+                },
+                "environments": {
+                    "type":"object",
+                    "description": "The environments that can be lauched with current repo",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/executionEnvironement"
+                    }
+                },
+                "branch": {
+                    "description": "The branch to use for the current repo",
+                    "anyOf": [
+                        {
+                            "type":"string",
+                            "enum": [
+                                "master",
+                                "develop",
+                                "origin/master",
+                                "origin/develop",
+                                "current"
+                            ]
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "additionalProperties": false,
+    "properties": {
+        "$schema":{
+            "type":"string"
+        },
+        "repositories": {
+            "type":"object",
+            "additionalProperties": {
+                "$ref": "#/definitions/repo_config"
+            }
+        },
+        "repoPath": {
+            "description": "The working directory where all the repo will be dupplicated",
+            "type":"string",
+            "format": "url"
+        }
+    }
+}

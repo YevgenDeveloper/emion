@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "paths": {
+      "*": [
+        "node_modules/*",
+      ]
+    },
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "strictPropertyInitialization": false,
+    "stripInternal": true,
+    "esModuleInterop": true,
+    "target": "es2015",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["es2017", "dom"],
+    "strict": true,
+    "types": [
+      "jest",
+      "node"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+  ],
+  "exclude": [
+    "certs",
+    "coverage",
+    "dist",
+    "docker",
+    "node_modules",
+    "public",
+    "script",
+    "templates",
+    "typings"
+  ]
+}

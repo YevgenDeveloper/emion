@@ -1,0 +1,13 @@
+import { checkAndparseParametrizedString } from './utils';
+console.log('123 ${port}')
+console.log('123 456')
+console.log(checkAndparseParametrizedString('123 ${port}', '123 456'))
+console.log('123 ${port} ${test}')
+console.log('123 456 678')
+console.log(checkAndparseParametrizedString('123 ${port} ${test}', '123 456 678'))
+console.log('123 ${port} ${test}')
+console.log('123 456')
+console.log(checkAndparseParametrizedString('123 ${port} ${test}', '123 456')) 
+console.log('123 ${port} ${test}')
+console.log('dezdezd6')
+console.log(checkAndparseParametrizedString('123 ${port} ${test}', 'dezdezd6')) 
