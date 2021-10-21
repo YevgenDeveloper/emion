@@ -7,9 +7,11 @@
             "description": "An environement to launch with a command, the definition of its readyness condition and some optional dependencies",
             "properties": {
                 "command": {
+                    "description": "The command that need to be run for this environment",
                     "type":"string"
                 },
                 "arguments": {
+                    "description": "The arguments of the command (each argument should be a different item array)",
                     "type":"array",
                     "items": {
                         "type":"string"
@@ -41,6 +43,7 @@
                     }]
                 },
                 "dependsOn":{
+                    "description": "The environements the current environement depends upon to be able to run",
                     "type":"array",
                     "items": {
                      "type":"string"
@@ -53,21 +56,22 @@
             "additionalProperties": false,
             "properties": {
                 "url": {
+                    "description": "The path or url of the repository",
                     "type":"string"
                 },
                 "initCommand": {
-                    "description": "The command to be launched to initialize the repo",
+                    "description": "The command to be launched to initialize this repository",
                     "type": "string"
                 },
                 "environments": {
                     "type":"object",
-                    "description": "The environments that can be lauched with current repo",
+                    "description": "The environments that can be lauched with this repository",
                     "additionalProperties": {
                         "$ref": "#/definitions/executionEnvironement"
                     }
                 },
                 "branch": {
-                    "description": "The branch to use for the current repo",
+                    "description": "The branch to use for this repository",
                     "anyOf": [
                         {
                             "type":"string",
@@ -93,13 +97,14 @@
             "type":"string"
         },
         "repositories": {
+            "description": "The list of used repositories",
             "type":"object",
             "additionalProperties": {
                 "$ref": "#/definitions/repo_config"
             }
         },
         "repoPath": {
-            "description": "The working directory where all the repo will be dupplicated",
+            "description": "The working directory where all the repositories will be cloned",
             "type":"string",
             "format": "url"
         }

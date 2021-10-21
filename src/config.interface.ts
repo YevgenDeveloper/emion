@@ -22,9 +22,16 @@ export interface ReadyWhen {
     portIsUp?:              number;
     consoleMessageIsFound?: string;
 }
-export enum EConfigElemType {
-    all='tous',
+export enum EConfigRepositoryItemType {
+    all='all',
     url='url',
-    command='commande',
-    branch='branche'
+    command='command',
+    branch='branch',
+    environments='environments'
+}
+export enum EConfigEnvironmentItemType {
+    command='command',
+    parameters='parameters',
+    dependsOn='dependsOn',
+    isReadyWhen='isReadyWhen',
 }
