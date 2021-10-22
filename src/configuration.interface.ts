@@ -1,9 +1,9 @@
-export interface ConfigSchema {
+export interface ConfigurationSchema {
     $schema?: string;
     repoPath:     string;
-    repositories: { [key: string]: RepoConfig };
+    repositories: { [key: string]: RepositoryConfiguration };
 }
-export interface RepoConfig {
+export interface RepositoryConfiguration {
     branch?: string;
     environments: { [key: string]: ExecutionEnvironement };
     initCommand?: string;

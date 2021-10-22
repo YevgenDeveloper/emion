@@ -3,7 +3,10 @@ export function checkAndparseParametrizedString(
   check: string,
   stringToCheck: string
 ): null | any {
-  const splits = check.toString().replace('/', '\/').split(/\${([^${}]*)}/gm)
+  const splits = check
+    .toString()
+    .replace('/', '/')
+    .split(/\${([^${}]*)}/gm)
   let regexStr = ''
   let isParameter = false
   const parameters = []
@@ -28,22 +31,27 @@ export function checkAndparseParametrizedString(
     return rtrObj
   }
 }
+let currentIndex = 0
 export function pickRandomColor(): string {
   const colors = [
-    'black',
     'red',
     'green',
     'yellow',
     'blue',
     'magenta',
+    'black',
     'cyan',
     'white',
     'gray'
   ]
-  const pickedColor = colors[Math.floor(Math.random() * colors.length)]
+  const pickedColor = colors[currentIndex]
+  currentIndex++
+  if (currentIndex > colors.length - 1) {
+    currentIndex = 0
+  }
   return pickedColor
 }
-export function kill(pid: string, signal?: string, callback?: any) {
+export function kill(v: Vorpal, pid: string, signal?: string, callback?: any) {
   signal = signal || 'SIGKILL'
   callback = callback || function() {}
   let killTree = true
@@ -54,17 +62,33 @@ export function kill(pid: string, signal?: string, callback?: any) {
     })
     const pids = [pid, ...childrenPids]
     pids.forEach(function(tpid: string) {
-      console.log('KILLING PROCESS', tpid)
+      v.log('Killing process ', tpid)
       try {
         process.kill(Number(tpid), signal)
       } catch (ex) {}
     })
     callback()
   } else {
-    console.log('KILLING PROCESS' + pid)
+    v.log('Killing process ', pid)
     try {
       process.kill(Number(pid), signal)
     } catch (ex) {}
     callback()
+  }
+}
+export  function getEnvLoggerForEnvironement(vorpal: Vorpal) {
+  return async (inputs: { envName: string, color: string|undefined, data: any }) => {
+    const { envName, color, data } = inputs
+    if (data) {
+      const dataToPrint = data.toString().trim()
+      if (dataToPrint) {
+        const chunks = dataToPrint.split('\n')
+        for (const chunk of chunks) {
+          vorpal.log(
+            vorpal.chalk[color||'white'](`[${envName.padEnd(6, ' ')}] ${chunk}`)
+          )
+        }
+      }
+    }
   }
 }
