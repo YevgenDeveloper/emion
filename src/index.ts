@@ -95,7 +95,7 @@ async function initializeCommands() {
 }
 async function start() {
   v.show()
-  const prettyFont = CFonts.render('E2E Tests|Runner', {
+  const prettyFont = CFonts.render('Environments|Orchestrator', {
     font: 'chrome', 
     align: 'center', 
     colors: ['candy', 'candy', 'candy'], 
