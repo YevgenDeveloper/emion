@@ -14,6 +14,7 @@
     "@types/jest": "^24.0.9",
     "@types/node": "^10.12.29",
     "@types/portscanner": "^2.1.0",
+    "cfonts": "^2.4.2",
     "portscanner": "^2.2.0",
     "simple-git": "^1.107.0",
     "vorpal": "^1.12.0"
