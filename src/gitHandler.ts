@@ -45,11 +45,9 @@ export default class GitHandler {
         }
       } catch (e) {
       }
-      console.log('TITI')
       const subModuleRepo = await simplegit(
         path.join(getConfigHandler().getRepoPath(), repoName)
       )
-      console.log('TATA')
       if (repository.branch) {
         await subModuleRepo.checkout(repository.branch!)
         await subModuleRepo.pull('origin', repository.branch!)
