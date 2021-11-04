@@ -1,10 +1,5 @@
 import vorpal from 'vorpal'
 import fs from 'fs'
-const fsPromises = fs.promises
-import {
-  ConfigurationSchema,
-  ExecutionEnvironement
-} from './configuration.interface'
 import CFonts from 'cfonts'
 import {
   configureWorkingPath,
@@ -14,7 +9,6 @@ import { getConfigHandler } from './configurationHandler'
 import GitHandler from './gitHandler'
 import EnvironmentsRunner from './environmentsRunner'
 const v: Vorpal = vorpal()
-const runningCommands: { [key: string]: ExecutionEnvironement } = {}
 const run = async function() {
   try {
     await plugInExitHandler()
