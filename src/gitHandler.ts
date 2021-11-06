@@ -50,8 +50,10 @@ export default class GitHandler {
             }
           }
           const subModuleRepo = await simplegit(subModulePath)
+          await subModuleRepo.fetch(['--all'])
           await subModuleRepo.checkout(repository.branch!)
           await subModuleRepo.pull('origin', repository.branch!)
+          await subModuleRepo.checkout(repository.branch!)
         } catch (e) {
           console.log('Submodule addition error', e)
           throw e
