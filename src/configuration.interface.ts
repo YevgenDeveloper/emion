@@ -14,7 +14,7 @@ export interface ExecutionEnvironement {
     arguments?: string[];
     command?:   string;
     dependsOn?: string[];
-    id: string
+    id?: string
     readyWhen?: ReadyWhen;
     repo?:string;
 }
