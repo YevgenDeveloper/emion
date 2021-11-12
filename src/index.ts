@@ -1,4 +1,4 @@
-import vorpal from 'vorpal'
+import Vorpal from 'vorpal'
 import fs from 'fs'
 import CFonts from 'cfonts'
 import {
@@ -8,7 +8,7 @@ import {
 import { getConfigHandler } from './configurationHandler'
 import GitHandler from './gitHandler'
 import EnvironmentsRunner from './environmentsRunner'
-const v: Vorpal = vorpal()
+const v: Vorpal = new Vorpal()
 const run = async function() {
   try {
     await plugInExitHandler()
@@ -22,13 +22,13 @@ const run = async function() {
 async function initializeCommands() {
   v.command(
     'config',
-    'Configure the different repository to use and their environments'
+    'Configure the different repository to use and their environments (Work in Progress)'
   ).action(async function(
     this: Vorpal.CommandInstance,
     args: any,
     callback: any
   ) {
-    this.log(v.chalk['yellow']('Configuration of the repositories'))
+    this.log((v as any).chalk['yellow']('Configuration of the repositories'))
     const isConfigFileExisting = getConfigHandler().isConfigFileInitialized()
     if (!isConfigFileExisting) {
       try {
@@ -52,7 +52,7 @@ async function initializeCommands() {
       await getConfigHandler().save()
     }
     callback()
-  })
+  } as Vorpal.Action)
   v.command(
     'run',
     'Select an environment to run (with all its dependencies)'
@@ -72,20 +72,20 @@ async function initializeCommands() {
     EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
     await EnvironmentsRunner.getEnvironmentsRunner().runEnvironement(response.env)
     callback()
-  })
+  } as Vorpal.Action)
   v.command('list', 'List all running environments').action(async function(
     this: Vorpal.CommandInstance,
     args: any,
     callback: any
   ) {
-    this.log(v.chalk['green']('Here is the list of the running environments:'))
+    this.log((v as any).chalk['green']('Here is the list of the running environments:'))
     const runningCommands = EnvironmentsRunner.getEnvironmentsRunner().getRunningCommands()
     const pids = Object.keys(runningCommands)
     for (const pid of pids) {
       v.log(`${runningCommands[pid].id} (pid:${pid})`)
     }
     callback()
-  })
+  } as Vorpal.Action)
 }
 async function start() {
   v.show()
@@ -106,7 +106,7 @@ async function start() {
   }
   await getConfigHandler().loadConfigFile()
   v.log(
-    v.chalk['yellow'](
+    (v as any).chalk['yellow'](
       `Config file is avaible at: ${getConfigHandler().getConfigFilePath()}, \nPlease do not hesitate to edit it directly with VSCode`
     )
   )

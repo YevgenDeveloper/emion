@@ -1,5 +1,6 @@
-import { ConfigurationSchema, EConfigRepositoryItemType } from './configuration.interface'
-import ConfigurationHandler, { getConfigHandler } from './configurationHandler'
+import { EConfigRepositoryItemType } from './configuration.interface'
+import { getConfigHandler } from './configurationHandler'
+import Vorpal from 'vorpal'
 const ADD_CHOICE = '️️️🔆 Add'
 const REMOVE_CHOICE = '❌ Remove'
 const DEEP_INTERACTIVE_CONFIGURATION = false

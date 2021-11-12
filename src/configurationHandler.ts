@@ -12,8 +12,8 @@ const schemaFilePath = path.join(__dirname, '../json/config.schema.json')
 const configFilePath = path.join(homeFolder!, '.launcherConfig.json')
 export default class ConfigurationHandler {
   public configuration: ConfigurationSchema
-  constructor(configuration?:ConfigurationSchema) {
-    this.configuration = configuration || {repoPath: '', repositories:{}}
+  constructor(configuration?: ConfigurationSchema) {
+    this.configuration = configuration || { repoPath: '', repositories: {} }
   }
   public async loadConfigFile() {
     this.configuration = JSON.parse(await fsPromises.readFile(configFilePath, 'utf8'))
@@ -74,12 +74,12 @@ export default class ConfigurationHandler {
   public async loadDefaultConfigFile() {
     this.configuration = JSON.parse(await fsPromises.readFile(defaultConfigFilePath, 'utf8'))
   }
-  public getConfigFilePath() : string {
+  public getConfigFilePath(): string {
     return configFilePath
   }
 }
 export function getConfigHandler() {
-  if(!configHandler) {
+  if (!configHandler) {
     configHandler = new ConfigurationHandler()
   }
   return configHandler

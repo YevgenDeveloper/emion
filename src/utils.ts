@@ -1,4 +1,5 @@
 import pstree from './pstree'
+import Vorpal from 'vorpal'
 export function checkAndparseParametrizedString(
   check: string,
   stringToCheck: string
@@ -85,7 +86,7 @@ export  function getEnvLoggerForEnvironement(vorpal: Vorpal) {
         const chunks = dataToPrint.split('\n')
         for (const chunk of chunks) {
           vorpal.log(
-            vorpal.chalk[color||'white'](`[${envName.padEnd(6, ' ')}] ${chunk}`)
+            (vorpal as any).chalk[color||'white'](`[${envName.padEnd(6, ' ')}] ${chunk}`)
           )
         }
       }

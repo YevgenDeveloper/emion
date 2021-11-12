@@ -2,6 +2,7 @@ import simplegit from 'simple-git/promise'
 import fs from 'fs-extra'
 import path from 'path'
 import { getConfigHandler } from './configurationHandler'
+import Vorpal from 'vorpal'
 let gitHandler: GitHandler
 export default class GitHandler {
   static getGitHandler(vorpal: Vorpal) {

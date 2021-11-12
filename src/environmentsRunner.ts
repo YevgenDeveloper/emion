@@ -1,8 +1,9 @@
-import ConfigurationHandler, { getConfigHandler } from './configurationHandler';
+import { getConfigHandler } from './configurationHandler';
 import { ExecutionEnvironement } from './configuration.interface';
 import {
   kill,
 } from './utils'
+import Vorpal from 'vorpal'
 import ChildProcess from 'child_process'
 import {
   pickRandomColor,

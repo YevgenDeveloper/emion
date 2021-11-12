@@ -1,7 +1,6 @@
 'use strict'
 import child_process from 'child_process'
 const spawn = child_process.spawnSync
-import { Transform, Stream } from 'stream'
 export default function childrenOfPid(
   pid: string | number): Array<{}> {
   try {
@@ -64,16 +63,12 @@ function normalizeHeader(str: string) {
   switch (str) {
     case 'Name':
       return 'COMMAND'
-      break
     case 'ParentProcessId':
       return 'PPID'
-      break
     case 'ProcessId':
       return 'PID'
-      break
     case 'Status':
       return 'STAT'
-      break
     default:
       throw new Error('Unknown process listing header: ' + str)
   }
