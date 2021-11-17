@@ -1,7 +1,2 @@
 node_modules
 dist
-*.nix
-.envrc
-coverage
-.vscode
-.nyc_output
