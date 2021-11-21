@@ -1,21 +1,18 @@
-import Vorpal from 'vorpal'
-import fs from 'fs'
 import CFonts from 'cfonts'
-import {
-  configureWorkingPath,
-  configureRepositories
-} from './configurationSteps'
+import Vorpal from 'vorpal'
 import { getConfigHandler } from './configurationHandler'
-import GitHandler from './gitHandler'
+import { configureRepositories, configureWorkingPath } from './configurationSteps'
 import EnvironmentsRunner from './environmentsRunner'
+import GitHandler from './gitHandler'
+import { vorpalLog } from './utils'
 const v: Vorpal = new Vorpal()
-const run = async function() {
+const run = async function () {
   try {
     await plugInExitHandler()
     await initializeCommands()
     await start()
-  } catch(e) {
-    v.log(`An error occured: ${e.toString()}`)
+  } catch (e) {
+    vorpalLog(v, `An error occured: ${e.toString()}`)
     v.exec('exit')
   }
 }
@@ -23,7 +20,7 @@ async function initializeCommands() {
   v.command(
     'config',
     'Configure the different repository to use and their environments (Work in Progress)'
-  ).action(async function(
+  ).action(async function (
     this: Vorpal.CommandInstance,
     args: any,
     callback: any
@@ -45,7 +42,7 @@ async function initializeCommands() {
         }
         await getConfigHandler().save()
       } catch (e) {
-        v.log('ERROR', e)
+        vorpalLog(v, 'ERROR' + e.toString())
       }
     } else {
       await configureRepositories(this)
@@ -56,7 +53,7 @@ async function initializeCommands() {
   v.command(
     'run',
     'Select an environment to run (with all its dependencies)'
-  ).action(async function(
+  ).action(async function (
     this: Vorpal.CommandInstance,
     args: any,
     callback: any
@@ -73,7 +70,7 @@ async function initializeCommands() {
     await EnvironmentsRunner.getEnvironmentsRunner().runEnvironement(response.env)
     callback()
   } as Vorpal.Action)
-  v.command('list', 'List all running environments').action(async function(
+  v.command('list', 'List all running environments').action(async function (
     this: Vorpal.CommandInstance,
     args: any,
     callback: any
@@ -82,7 +79,7 @@ async function initializeCommands() {
     const runningCommands = EnvironmentsRunner.getEnvironmentsRunner().getRunningCommands()
     const pids = Object.keys(runningCommands)
     for (const pid of pids) {
-      v.log(`${runningCommands[pid].id} (pid:${pid})`)
+      vorpalLog(v, `${runningCommands[pid].id} (pid:${pid})`)
     }
     callback()
   } as Vorpal.Action)
@@ -99,13 +96,13 @@ async function start() {
     space: true, 
     maxLength: '0' 
   })
-  v.log(prettyFont.string)
+  vorpalLog(v, prettyFont.string)
   const isConfigFileExisting = getConfigHandler().isConfigFileInitialized()
   if (!isConfigFileExisting) {
     await v.exec('config')
   }
   await getConfigHandler().loadConfigFile()
-  v.log(
+  vorpalLog(v,
     (v as any).chalk['yellow'](
       `Config file is avaible at: ${getConfigHandler().getConfigFilePath()}, \nPlease do not hesitate to edit it directly with VSCode`
     )
@@ -128,11 +125,11 @@ async function start() {
 }
 async function plugInExitHandler() {
   function exitHandler(options: any, exitCode: any) {
-    if(options.cleanup) {
+    if (options.cleanup) {
       EnvironmentsRunner.getEnvironmentsRunner().cleanRunningCommands()
     }
-    if (exitCode || exitCode === 0) 
-    if (options.exit) process.exit(0)
+    if (exitCode || exitCode === 0)
+      if (options.exit) process.exit(0)
   }
   process.on('exit', async code => {
     await exitHandler({ cleanup: true }, code)

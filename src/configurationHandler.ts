@@ -1,8 +1,10 @@
-import { ConfigurationSchema, ExecutionEnvironement, RepositoryConfiguration } from './configuration.interface'
 import fs from 'fs'
+import path from 'path'
+import { ConfigurationSchema, ExecutionEnvironement, RepositoryConfiguration } from './configuration.interface'
+import logger from './logger'
+import { logEnd, logStart, LogStartEnd } from './utils'
 const fsPromises = fs.promises
 let configHandler: ConfigurationHandler
-import path from 'path'
 const homeFolder = process.env.HOME
 const defaultConfigFilePath = path.join(
   __dirname,
@@ -15,13 +17,17 @@ export default class ConfigurationHandler {
   constructor(configuration?: ConfigurationSchema) {
     this.configuration = configuration || { repoPath: '', repositories: {} }
   }
+  @LogStartEnd()
   public async loadConfigFile() {
+    logger.info(`Loading config file from ${configFilePath}`)
     this.configuration = JSON.parse(await fsPromises.readFile(configFilePath, 'utf8'))
   }
   public isConfigFileInitialized() {
     return fs.existsSync(configFilePath)
   }
+  @LogStartEnd()
   public getEnvironmentsNames(): string[] {
+    logger.debug(`Using repositories ${JSON.stringify(this.configuration.repositories)}`)
     const repositories = Object.keys(this.configuration.repositories)
     let envs: string[] = []
     for (const repo of repositories) {
@@ -31,24 +37,9 @@ export default class ConfigurationHandler {
     }
     return envs
   }
-  public getEnvironment(envName: string): ExecutionEnvironement {
-    const envs = this.getEnvironments()
-    const env = envs[envName]
-    if (!env) {
-      throw new Error(`Unknown environement ${envName}`)
-    }
-    return env
-  }
-  public getRepository(repoName: string): RepositoryConfiguration {
-    return this.configuration.repositories[repoName]
-  }
-  public getRepositoryNames(): string[] {
-    return Object.keys(this.configuration.repositories)
-  }
-  public getRepoPath(): string {
-    return this.configuration.repoPath
-  }
+  @LogStartEnd()
   public getEnvironments(): { [key: string]: ExecutionEnvironement } {
+    logger.debug(`Using repositories ${JSON.stringify(this.configuration.repositories)}`)
     const repositories = Object.keys(this.configuration.repositories)
     let finalEnvs: { [key: string]: ExecutionEnvironement } = {}
     for (const repo of repositories) {
@@ -64,6 +55,29 @@ export default class ConfigurationHandler {
     }
     return finalEnvs
   }
+  @LogStartEnd()
+  public getEnvironment(envName: string): ExecutionEnvironement {
+    logStart(arguments, 'getEnvironment')
+    const envs = this.getEnvironments()
+    const env = envs[envName]
+    if (!env) {
+      throw new Error(`Unknown environement ${envName}`)
+    }
+    return logEnd(env, 'getEnvironment')
+  }
+  @LogStartEnd()
+  public getRepository(repoName: string): RepositoryConfiguration {
+    return this.configuration.repositories[repoName]
+  }
+  @LogStartEnd()
+  public getRepositoryNames(): string[] {
+    return Object.keys(this.configuration.repositories)
+  }
+  @LogStartEnd()
+  public getRepoPath(): string {
+    return this.configuration.repoPath
+  }
+  @LogStartEnd()
   public async save() {
     await fsPromises.writeFile(
       configFilePath,
@@ -71,6 +85,7 @@ export default class ConfigurationHandler {
       { encoding: 'utf8' }
     )
   }
+  @LogStartEnd()
   public async loadDefaultConfigFile() {
     this.configuration = JSON.parse(await fsPromises.readFile(defaultConfigFilePath, 'utf8'))
   }

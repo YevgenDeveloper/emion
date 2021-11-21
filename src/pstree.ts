@@ -1,5 +1,6 @@
 'use strict'
 import child_process from 'child_process'
+import logger from './logger'
 const spawn = child_process.spawnSync
 export default function childrenOfPid(
   pid: string | number): Array<{}> {
@@ -39,7 +40,7 @@ export default function childrenOfPid(
         }
         return row
       } catch (e) {
-        console.log(e)
+        logger.error(e)
       }
     })
     let parents: any = {}

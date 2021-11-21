@@ -7,7 +7,7 @@
     "test": "npx tsc && nyc ava ",
     "test:watch": "npx tsc -w & nyc ava --watch",
     "dev": "npx tsc && node dist/index.js",
-    "prod": "npx tsc && node --no-warnings dist/index.js"
+    "prod": "npx tsc && cross-env NODE_ENV=production node --no-warnings dist/index.js"
   },
   "prettier": {
     "semi": false
@@ -24,12 +24,14 @@
     "fs-extra": "7.0.1",
     "portscanner": "2.2.0",
     "simple-git": "1.121.0",
-    "vorpal": "1.12.0"
+    "vorpal": "1.12.0",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "0.1.3",
     "@types/sinon": "7.0.13",
     "ava": "2.2.0",
+    "cross-env": "^6.0.0",
     "npm-check-updates": "^3.1.20",
     "nyc": "14.1.1",
     "prettier": "1.18.2",
