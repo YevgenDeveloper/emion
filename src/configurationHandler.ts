@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { ConfigurationSchema, ExecutionEnvironement, RepositoryConfiguration } from './configuration.interface'
+import { IConfigurationSchema, IExecutionEnvironement, IRepositoryConfiguration } from './configuration.interface'
 import logger from './logger'
 import { logEnd, logStart, LogStartEnd } from './utils'
 const fsPromises = fs.promises
@@ -13,8 +13,8 @@ const defaultConfigFilePath = path.join(
 const schemaFilePath = path.join(__dirname, '../json/config.schema.json')
 const configFilePath = path.join(homeFolder!, '.launcherConfig.json')
 export default class ConfigurationHandler {
-  public configuration: ConfigurationSchema
-  constructor(configuration?: ConfigurationSchema) {
+  public configuration: IConfigurationSchema
+  constructor(configuration?: IConfigurationSchema) {
     this.configuration = configuration || { repoPath: '', repositories: {} }
   }
   @LogStartEnd()
@@ -38,10 +38,10 @@ export default class ConfigurationHandler {
     return envs
   }
   @LogStartEnd()
-  public getEnvironments(): { [key: string]: ExecutionEnvironement } {
+  public getEnvironments(): { [key: string]: IExecutionEnvironement } {
     logger.debug(`Using repositories ${JSON.stringify(this.configuration.repositories)}`)
     const repositories = Object.keys(this.configuration.repositories)
-    let finalEnvs: { [key: string]: ExecutionEnvironement } = {}
+    const finalEnvs: { [key: string]: IExecutionEnvironement } = {}
     for (const repo of repositories) {
       const envs = Object.keys(
         this.configuration.repositories[repo].environments
@@ -56,7 +56,7 @@ export default class ConfigurationHandler {
     return finalEnvs
   }
   @LogStartEnd()
-  public getEnvironment(envName: string): ExecutionEnvironement {
+  public getEnvironment(envName: string): IExecutionEnvironement {
     logStart(arguments, 'getEnvironment')
     const envs = this.getEnvironments()
     const env = envs[envName]
@@ -66,7 +66,7 @@ export default class ConfigurationHandler {
     return logEnd(env, 'getEnvironment')
   }
   @LogStartEnd()
-  public getRepository(repoName: string): RepositoryConfiguration {
+  public getRepository(repoName: string): IRepositoryConfiguration {
     return this.configuration.repositories[repoName]
   }
   @LogStartEnd()

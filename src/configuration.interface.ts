@@ -1,37 +1,37 @@
-export interface ConfigurationSchema {
-    $schema?: string;
-    repoPath:     string;
-    repositories: { [key: string]: RepositoryConfiguration };
+export interface IConfigurationSchema {
+  $schema?: string
+  repoPath: string
+  repositories: { [key: string]: IRepositoryConfiguration }
 }
-export interface RepositoryConfiguration {
-    branch?: string;
-    environments: { [key: string]: ExecutionEnvironement };
-    initCommand?: string;
-    url?:         string;
+export interface IRepositoryConfiguration {
+  branch?: string
+  environments: { [key: string]: IExecutionEnvironement }
+  initCommand?: string
+  url?: string
 }
-export interface ExecutionEnvironement {
-    currentPid?: number;
-    arguments?: string[];
-    command?:   string;
-    dependsOn?: string[];
-    id?: string
-    readyWhen?: ReadyWhen;
-    repo?:string;
+export interface IExecutionEnvironement {
+  currentPid?: number
+  arguments?: string[]
+  command?: string
+  dependsOn?: string[]
+  id?: string
+  readyWhen?: IReadyWhen
+  repo?: string
 }
-export interface ReadyWhen {
-    portIsUp?:              number;
-    consoleMessageIsFound?: string;
+export interface IReadyWhen {
+  portIsUp?: number
+  consoleMessageIsFound?: string
 }
 export enum EConfigRepositoryItemType {
-    all='all',
-    url='url',
-    command='command',
-    branch='branch',
-    environments='environments'
+  all = 'all',
+  url = 'url',
+  command = 'command',
+  branch = 'branch',
+  environments = 'environments'
 }
 export enum EConfigEnvironmentItemType {
-    command='command',
-    parameters='parameters',
-    dependsOn='dependsOn',
-    isReadyWhen='isReadyWhen',
+  command = 'command',
+  parameters = 'parameters',
+  dependsOn = 'dependsOn',
+  isReadyWhen = 'isReadyWhen',
 }

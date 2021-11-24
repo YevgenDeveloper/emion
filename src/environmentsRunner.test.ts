@@ -1,25 +1,25 @@
 import test from 'ava'
 import sinon from 'sinon'
-import EnvironmentsRunner from './environmentsRunner'
 import Vorpal from 'vorpal'
-import ConfigurationHandler from './configurationHandler';
-import { ExecutionEnvironement, RepositoryConfiguration } from './configuration.interface';
-test('Should return a runner from the static method', t => {
+import { IExecutionEnvironement, IRepositoryConfiguration } from './configuration.interface'
+import ConfigurationHandler from './configurationHandler'
+import EnvironmentsRunner from './environmentsRunner'
+test('Should return a runner from the static method', (t) => {
   const result = EnvironmentsRunner.getEnvironmentsRunner()
   t.is(result.constructor.name, 'EnvironmentsRunner')
 })
-test('Should log the correct information while executing an environement (TO BE COMPLETED TO MANAGE ASYNC)', async t => {
+test('Should log the correct information while executing an environement (TO BE COMPLETED TO MANAGE ASYNC)', async (t) => {
   const log = sinon.fake.returns(undefined)
   Vorpal.prototype.log = log
-  const testEnv: ExecutionEnvironement = {
+  const testEnv: IExecutionEnvironement = {
     command: 'echo "Haha" && exit 0',
     id: 'testEnv',
     repo: 'testRepo'
   }
   ConfigurationHandler.prototype.getEnvironment = sinon.fake.returns(testEnv)
-  const testRepo: RepositoryConfiguration = {
+  const testRepo: IRepositoryConfiguration = {
     environments: {
-      'testEnv': testEnv
+      testEnv
     },
     initCommand: 'echo "Huhu" && exit 0'
   }

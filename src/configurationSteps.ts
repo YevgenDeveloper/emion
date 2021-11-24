@@ -1,26 +1,26 @@
+import Vorpal from 'vorpal'
 import { EConfigRepositoryItemType } from './configuration.interface'
 import { getConfigHandler } from './configurationHandler'
-import Vorpal from 'vorpal'
 const ADD_CHOICE = '️️️🔆 Add'
 const REMOVE_CHOICE = '❌ Remove'
 const DEEP_INTERACTIVE_CONFIGURATION = false
-const configureWorkingPath = async function(
+const configureWorkingPath = async (
   commandInstance: Vorpal.CommandInstance,
-) {
+) => {
   let response: any
   response = await commandInstance.prompt({
     type: 'input',
     name: 'repoPath',
     default: getConfigHandler().getRepoPath(),
-    message: `In which folder should repositories be cloned? `
+    message: 'In which folder should repositories be cloned? '
   })
   getConfigHandler().configuration.repoPath = response.repoPath.trim()
 }
-const configureRepositoryElem = async function(inputs: {
+const configureRepositoryElem = async (inputs: {
   commandInstance: Vorpal.CommandInstance
   configElemKind: string
   repository: string
-}) {
+}) => {
   const { configElemKind, repository, commandInstance } = inputs
   if (!getConfigHandler().configuration.repositories) {
     getConfigHandler().configuration.repositories = {}
@@ -40,7 +40,7 @@ const configureRepositoryElem = async function(inputs: {
       type: 'input',
       name: 'url',
       default: repo.url,
-      message: `What is the url or path of the repository ? `
+      message: 'What is the url or path of the repository ? '
     })
     repo.url = response.url.trim()
   }
@@ -52,7 +52,7 @@ const configureRepositoryElem = async function(inputs: {
       type: 'input',
       name: 'branch',
       default: repo.branch,
-      message: `What is the branch to use for this repository ? `
+      message: 'What is the branch to use for this repository ? '
     })
     repo.branch = response.branch.trim()
   }
@@ -64,7 +64,7 @@ const configureRepositoryElem = async function(inputs: {
       type: 'input',
       name: 'initCommand',
       default: repo.initCommand,
-      message: `What is the initialisation command for this repository ? `
+      message: 'What is the initialisation command for this repository ? '
     })
     repo.initCommand = response.initCommand.trim()
   }
@@ -80,8 +80,8 @@ const configureRepositoryElem = async function(inputs: {
           repo.environments
         ),
         onModify: configureEnvironement,
-        onAdd: () => {},
-        onDelete: () => {}
+        onAdd: () => { },
+        onDelete: () => { }
       })
     } else {
       commandInstance.log(
@@ -90,11 +90,11 @@ const configureRepositoryElem = async function(inputs: {
     }
   }
 }
-const configureEnvironement = async function(inputs: {
+const configureEnvironement = async (inputs: {
   commandInstance: Vorpal.CommandInstance
   envName: string
   callback: any
-}) {
+}) => {
   let response: any
   const { commandInstance, envName, callback } = inputs
   commandInstance.log(`Configuring environment ${envName}`)
@@ -106,14 +106,14 @@ const configureEnvironement = async function(inputs: {
   })
   callback()
 }
-const configureListOfItems = async function(inputs: {
+const configureListOfItems = async (inputs: {
   commandInstance: Vorpal.CommandInstance
   itemName: string
   itemList: string[]
   onModify: (inputs: any) => void
   onAdd: () => void
   onDelete: () => void
-}) {
+}) => {
   const {
     itemList,
     itemName,
@@ -137,12 +137,12 @@ const configureListOfItems = async function(inputs: {
     await onModify(response.elem)
   }
 }
-const configureRepository = async function(inputs: {
+const configureRepository = async (inputs: {
   commandInstance: Vorpal.CommandInstance
   repository: any
-}) {
+}) => {
   const { commandInstance, repository } = inputs
-  let response: any = await commandInstance.prompt({
+  const response: any = await commandInstance.prompt({
     type: 'list',
     name: 'elem',
     message: 'What do you want to configure? ',
@@ -156,16 +156,16 @@ const configureRepository = async function(inputs: {
   })
   return response
 }
-const configureRepositories = async function(
+const configureRepositories = async (
   commandInstance: Vorpal.CommandInstance,
-) {
+) => {
   await configureListOfItems({
     commandInstance,
     itemName: 'repository',
     itemList: Object.keys(getConfigHandler().configuration.repositories),
     onModify: configureRepository,
     onDelete: async () => {
-      let response: any = await commandInstance.prompt({
+      const response: any = await commandInstance.prompt({
         type: 'list',
         name: 'repository',
         message: 'Which repository should be removed? ',
@@ -178,7 +178,7 @@ const configureRepositories = async function(
       response = await commandInstance.prompt({
         type: 'input',
         name: 'repositoryName',
-        message: `What is the name of this repository? `
+        message: 'What is the name of this repository? '
       })
       getConfigHandler().configuration.repositories[response.repositoryName] = {
         environments: {}
@@ -190,11 +190,4 @@ const configureRepositories = async function(
     }
   })
 }
-export {
-  configureRepositories,
-  configureRepository,
-  configureListOfItems,
-  configureEnvironement,
-  configureRepositoryElem,
-  configureWorkingPath
-}
+export { configureRepositories, configureRepository, configureListOfItems, configureEnvironement, configureRepositoryElem, configureWorkingPath }

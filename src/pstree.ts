@@ -23,8 +23,8 @@ export default function childrenOfPid(
         'ppid,pid,stat,comm'
       ]).output.toString()
     }
-    processes = processes.substring(2).split('\n').map(line => {
-      var columns = line
+    processes = processes.substring(2).split('\n').map((line) => {
+      const columns = line
         .toString()
         .trim()
         .split(/\s+/)
@@ -33,8 +33,8 @@ export default function childrenOfPid(
           headers = columns
           headers = headers.map(normalizeHeader)
         }
-        var row: any = {}
-        var h = headers.slice()
+        const row: any = {}
+        const h = headers.slice()
         while (h.length) {
           row[h.shift()] = h.length ? columns.shift() : columns.join(' ')
         }
@@ -43,10 +43,10 @@ export default function childrenOfPid(
         logger.error(e)
       }
     })
-    let parents: any = {}
-    let children: any[] = []
+    const parents: any = {}
+    const children: any[] = []
     parents[pid] = true
-    processes.forEach(function(proc: any) {
+    processes.forEach((proc: any) => {
       if (parents[proc.PPID]) {
         parents[proc.PID] = true
         children.push(proc)

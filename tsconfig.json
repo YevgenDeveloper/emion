@@ -5,7 +5,7 @@
     "outDir": "dist",
     "paths": {
       "*": [
-        "node_modules/*",
+        "node_modules/*"
       ]
     },
     "sourceMap": true,
@@ -18,7 +18,10 @@
     "target": "es2015",
     "module": "commonjs",
     "moduleResolution": "node",
-    "lib": ["es2017", "dom"],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
     "strict": true,
     "types": [
       "node"

@@ -7,15 +7,15 @@ import logger from './logger'
 import { LogStartEnd } from './utils'
 let gitHandler: GitHandler
 export default class GitHandler {
-  static getGitHandler(vorpal: Vorpal) {
+  public static getGitHandler(vorpal: Vorpal) {
     if (!gitHandler) {
       gitHandler = new GitHandler(vorpal)
     }
     gitHandler.vorpal = vorpal
     return gitHandler
   }
-  constructor(private vorpal: Vorpal) { }
   private currentRepo: simplegit.SimpleGit
+  constructor(private vorpal: Vorpal) { }
   @LogStartEnd()
   public async loadRepo(repoPath: string): Promise<void> {
     this.currentRepo = await simplegit(repoPath)
@@ -69,18 +69,18 @@ export default class GitHandler {
           logger.debug(`Starting initialization of simple git at ${subModulePath}`)
           const subModuleRepo = await simplegit(subModulePath)
           logger.debug(`Initialization of simple git at ${subModulePath} done`)
-          logger.debug(`Starting fetch all`)
+          logger.debug('Starting fetch all')
           await subModuleRepo.fetch(['--all'])
-          logger.debug(`Fetch all done`)
+          logger.debug('Fetch all done')
           logger.debug(`Starting checkout for branch ${repository.branch}`)
           await subModuleRepo.checkout(repository.branch!)
-          logger.debug(`Checkout done`)
+          logger.debug('Checkout done')
           logger.debug(`Starting pulling ${repository.branch}`)
           await subModuleRepo.pull('origin', repository.branch!)
-          logger.debug(`Pulling done`)
+          logger.debug('Pulling done')
           logger.debug(`Starting checkout for branch ${repository.branch}`)
           await subModuleRepo.checkout(repository.branch!)
-          logger.debug(`Checkout done`)
+          logger.debug('Checkout done')
         } catch (e) {
           logger.error('Submodule addition error', e)
           throw e

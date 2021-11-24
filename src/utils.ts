@@ -55,15 +55,15 @@ export function pickRandomColor(): string {
 }
 export function kill(v: Vorpal, pid: string, signal?: string, callback?: any) {
   signal = signal || 'SIGKILL'
-  callback = callback || function () { }
-  let killTree = true
+  callback = callback || (() => undefined)
+  const killTree = true
   if (killTree) {
-    const children: {}[] = pstree(pid)
-    const childrenPids = children.map(function (p: any) {
+    const children: Array<{}> = pstree(pid)
+    const childrenPids = children.map((p: any) => {
       return p.PID
     })
     const pids = [pid, ...childrenPids]
-    pids.forEach(function (tpid: string) {
+    pids.forEach((tpid: string) => {
       v.log('Killing process ', tpid)
       try {
         process.kill(Number(tpid), signal)

@@ -1,21 +1,21 @@
-import ChildProcess from 'child_process';
-import path from 'path';
-import * as portscanner from 'portscanner';
-import Vorpal from 'vorpal';
-import { ExecutionEnvironement } from './configuration.interface';
-import { getConfigHandler } from './configurationHandler';
-import { checkAndparseParametrizedString, getEnvLoggerForEnvironement, kill, LogStartEnd, pickRandomColor } from './utils';
+import ChildProcess from 'child_process'
+import path from 'path'
+import * as portscanner from 'portscanner'
+import Vorpal from 'vorpal'
+import { IExecutionEnvironement } from './configuration.interface'
+import { getConfigHandler } from './configurationHandler'
+import { checkAndparseParametrizedString, getEnvLoggerForEnvironement, kill, LogStartEnd, pickRandomColor } from './utils'
 let runner: EnvironmentsRunner
 export default class EnvironmentsRunner {
-  private runningCommands: { [key: string]: ExecutionEnvironement }
-  private logDataForEnv: any
-  private vorpal: Vorpal
   public static getEnvironmentsRunner() {
     if (!runner) {
       runner = new EnvironmentsRunner()
     }
     return runner
   }
+  private runningCommands: { [key: string]: IExecutionEnvironement }
+  private logDataForEnv: any
+  private vorpal: Vorpal
   constructor() {
     this.runningCommands = {}
   }
@@ -25,7 +25,7 @@ export default class EnvironmentsRunner {
   }
   @LogStartEnd()
   public cleanRunningCommands() {
-    this.vorpal.log(`PROCESS CLEANING BEGIN`)
+    this.vorpal.log('PROCESS CLEANING BEGIN')
     const pids = Object.keys(this.runningCommands)
     for (const pid of pids) {
       this.vorpal.log(`${this.runningCommands[pid].id} (pid:${pid})`)
@@ -35,7 +35,7 @@ export default class EnvironmentsRunner {
         this.vorpal.log(`CLEANUP OF ${pid} FAILED WITH ERROR ${e.toString()}`)
       }
     }
-    this.vorpal.log(`PROCESS CLEANING SUCCESSFULL`)
+    this.vorpal.log('PROCESS CLEANING SUCCESSFULL')
   }
   @LogStartEnd()
   public getRunningCommands() {
@@ -97,7 +97,7 @@ export default class EnvironmentsRunner {
     })
   }
   @LogStartEnd()
-  public async executeEnvironement(inputs: { env: ExecutionEnvironement, color?: string }) {
+  public async executeEnvironement(inputs: { env: IExecutionEnvironement, color?: string }) {
     const { env, color } = inputs
     let pickedColor: string
     return new Promise(async (resolve, reject) => {
@@ -107,7 +107,7 @@ export default class EnvironmentsRunner {
         pickedColor = color
       }
       if (env.dependsOn && env.dependsOn.length > 0) {
-        await Promise.all(env.dependsOn.map(depEnv => this.runEnvironement(depEnv)))
+        await Promise.all(env.dependsOn.map((depEnv) => this.runEnvironement(depEnv)))
       }
       const cmd = env.arguments
         ? ChildProcess.spawn(env.command!, env.arguments, {

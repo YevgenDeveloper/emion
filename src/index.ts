@@ -6,7 +6,7 @@ import EnvironmentsRunner from './environmentsRunner'
 import GitHandler from './gitHandler'
 import { vorpalLog } from './utils'
 const v: Vorpal = new Vorpal()
-const run = async function () {
+const run = async () => {
   try {
     await plugInExitHandler()
     await initializeCommands()
@@ -25,12 +25,12 @@ async function initializeCommands() {
     args: any,
     callback: any
   ) {
-    this.log((v as any).chalk['yellow']('Configuration of the repositories'))
+    this.log((v as any).chalk.yellow('Configuration of the repositories'))
     const isConfigFileExisting = getConfigHandler().isConfigFileInitialized()
     if (!isConfigFileExisting) {
       try {
         await getConfigHandler().loadDefaultConfigFile()
-        let response: any = await this.prompt({
+        const response: any = await this.prompt({
           type: 'confirm',
           name: 'configureSetup',
           message:
@@ -53,36 +53,38 @@ async function initializeCommands() {
   v.command(
     'run',
     'Select an environment to run (with all its dependencies)'
-  ).action(async function (
-    this: Vorpal.CommandInstance,
-    args: any,
-    callback: any
-  ) {
-    await GitHandler.getGitHandler(v).synchronise()
-    let envs: string[] = getConfigHandler().getEnvironmentsNames()
-    let response: any = await this.prompt({
-      type: 'list',
-      name: 'env',
-      message: 'Which environment do you want to run ? ',
-      choices: envs
-    })
-    EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
-    await EnvironmentsRunner.getEnvironmentsRunner().runEnvironement(response.env)
-    callback()
-  } as Vorpal.Action)
-  v.command('list', 'List all running environments').action(async function (
-    this: Vorpal.CommandInstance,
-    args: any,
-    callback: any
-  ) {
-    this.log((v as any).chalk['green']('Here is the list of the running environments:'))
-    const runningCommands = EnvironmentsRunner.getEnvironmentsRunner().getRunningCommands()
-    const pids = Object.keys(runningCommands)
-    for (const pid of pids) {
-      vorpalLog(v, `${runningCommands[pid].id} (pid:${pid})`)
-    }
-    callback()
-  } as Vorpal.Action)
+  ).action(
+    async function (
+      this: Vorpal.CommandInstance,
+      args: any,
+      callback: any
+    ) {
+      await GitHandler.getGitHandler(v).synchronise()
+      const envs: string[] = getConfigHandler().getEnvironmentsNames()
+      const response: any = await this.prompt({
+        type: 'list',
+        name: 'env',
+        message: 'Which environment do you want to run ? ',
+        choices: envs
+      })
+      EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
+      await EnvironmentsRunner.getEnvironmentsRunner().runEnvironement(response.env)
+      callback()
+    } as Vorpal.Action)
+  v.command('list', 'List all running environments').action(
+    async function (
+      this: Vorpal.CommandInstance,
+      args: any,
+      callback: any
+    ) {
+      this.log((v as any).chalk.green('Here is the list of the running environments:'))
+      const runningCommands = EnvironmentsRunner.getEnvironmentsRunner().getRunningCommands()
+      const pids = Object.keys(runningCommands)
+      for (const pid of pids) {
+        vorpalLog(v, `${runningCommands[pid].id} (pid:${pid})`)
+      }
+      callback()
+    } as Vorpal.Action)
 }
 async function start() {
   v.show()
@@ -103,7 +105,7 @@ async function start() {
   }
   await getConfigHandler().loadConfigFile()
   vorpalLog(v,
-    (v as any).chalk['yellow'](
+    (v as any).chalk.yellow(
       `Config file is avaible at: ${getConfigHandler().getConfigFilePath()}, \nPlease do not hesitate to edit it directly with VSCode`
     )
   )
@@ -113,7 +115,7 @@ async function start() {
   } else {
     await GitHandler.getGitHandler(v).loadRepo(repoPath)
   }
-  let runEnv = process.argv.slice(2)[0]
+  const runEnv = process.argv.slice(2)[0]
   if (runEnv) {
     await GitHandler.getGitHandler(v).synchronise()
     EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
@@ -128,22 +130,23 @@ async function plugInExitHandler() {
     if (options.cleanup) {
       EnvironmentsRunner.getEnvironmentsRunner().cleanRunningCommands()
     }
-    if (exitCode || exitCode === 0)
-      if (options.exit) process.exit(0)
+    if (exitCode || exitCode === 0) {
+      if (options.exit) { process.exit(0) }
+    }
   }
-  process.on('exit', async code => {
+  process.on('exit', async (code) => {
     await exitHandler({ cleanup: true }, code)
   })
-  process.on('SIGINT', async code => {
+  process.on('SIGINT', async (code) => {
     await exitHandler({ exit: true }, code)
   })
-  process.on('SIGUSR1', async code => {
+  process.on('SIGUSR1', async (code) => {
     await exitHandler({ exit: true }, code)
   })
-  process.on('SIGUSR2', async code => {
+  process.on('SIGUSR2', async (code) => {
     await exitHandler({ exit: true }, code)
   })
-  process.on('uncaughtException', async code => {
+  process.on('uncaughtException', async (code) => {
     await exitHandler({ exit: true }, code)
   })
 }
