@@ -55,6 +55,9 @@
     ]
   },
   "ava": {
+    "files": [
+      "src/**/*.test.ts"
+    ],
     "compileEnhancements": false,
     "extensions": [
       "ts"
