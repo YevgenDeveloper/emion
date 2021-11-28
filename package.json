@@ -47,6 +47,9 @@
     "tslint-eslint-rules": "^5.4.0",
     "typescript": "3.5.3"
   },
+  "bin": {
+    "env-orchestrator": "./dist/index.js"
+  },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
     "reporter": [

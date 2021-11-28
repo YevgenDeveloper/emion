@@ -11,18 +11,19 @@ const defaultConfigFilePath = path.join(
   '../json/config.default.json'
 )
 const schemaFilePath = path.join(__dirname, '../json/config.schema.json')
-const configFilePath = path.join(homeFolder!, '.launcherConfig.json')
 export default class ConfigurationHandler {
   public configuration: IConfigurationSchema
+  private configFilePath = ''
   constructor(configuration?: IConfigurationSchema) {
     this.configuration = configuration || { repoPath: '', repositories: {} }
   }
   @LogStartEnd()
-  public async loadConfigFile() {
-    logger.info(`Loading config file from ${configFilePath}`)
-    this.configuration = JSON.parse(await fsPromises.readFile(configFilePath, 'utf8'))
+  public async loadConfigFile(configFilePath: string) {
+    this.configFilePath = configFilePath
+    logger.info(`Loading config file from ${this.configFilePath}`)
+    this.configuration = JSON.parse(await fsPromises.readFile(this.configFilePath, 'utf8'))
   }
-  public isConfigFileInitialized() {
+  public isConfigFileExisting(configFilePath: string) {
     return fs.existsSync(configFilePath)
   }
   @LogStartEnd()
@@ -80,7 +81,7 @@ export default class ConfigurationHandler {
   @LogStartEnd()
   public async save() {
     await fsPromises.writeFile(
-      configFilePath,
+      this.configFilePath,
       JSON.stringify(this.configuration, undefined, '\t'),
       { encoding: 'utf8' }
     )
@@ -90,7 +91,7 @@ export default class ConfigurationHandler {
     this.configuration = JSON.parse(await fsPromises.readFile(defaultConfigFilePath, 'utf8'))
   }
   public getConfigFilePath(): string {
-    return configFilePath
+    return this.configFilePath
   }
 }
 export function getConfigHandler() {

@@ -1,6 +1,5 @@
 import test from 'ava'
 import fs from 'fs'
-import path from 'path'
 import sinon from 'sinon'
 import { IConfigurationSchema } from './configuration.interface'
 import ConfigurationHandler from './configurationHandler'
@@ -29,6 +28,7 @@ const INPUT_SCHEMA: IConfigurationSchema = {
     }
   }
 }
+const FILE_PATH = '/A/FILE/PATH'
 test.beforeEach((t) => {
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
 })
@@ -40,19 +40,19 @@ test('It should be created ok with initialization configuration provided', (t) =
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
   t.is(configurationHandler.configuration, INPUT_SCHEMA)
 })
-test('It should be able to load the config file', async (t) => {
+test.serial('It should be able to load the config file', async (t) => {
   configurationHandler = new ConfigurationHandler()
   const fake = sinon.fake.resolves(JSON.stringify(INPUT_SCHEMA))
   sinon.replace(fs.promises, 'readFile', fake)
-  await configurationHandler.loadConfigFile()
+  await configurationHandler.loadConfigFile(FILE_PATH)
   t.deepEqual(configurationHandler.configuration, INPUT_SCHEMA)
   sinon.restore()
 })
-test('It should check the initialization fine', (t) => {
+test.serial('It should check the initialization fine', (t) => {
   const fake = sinon.fake.returns(true)
   sinon.replace(fs, 'existsSync', fake)
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
-  const result = configurationHandler.isConfigFileInitialized()
+  const result = configurationHandler.isConfigFileExisting(FILE_PATH)
   t.is(result, true)
   sinon.restore()
 })
@@ -116,24 +116,33 @@ test('It should be able to get all the environements', (t) => {
   }
   )
 })
-test('It should be able to save the configuration file correctly', async (t) => {
+test.serial('It should be able to save the configuration file correctly', async (t) => {
   const fake = sinon.fake.resolves(undefined)
   sinon.replace(fs.promises, 'writeFile', fake)
+  const fake2 = sinon.fake.resolves(JSON.stringify(INPUT_SCHEMA))
+  sinon.replace(fs.promises, 'readFile', fake2)
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
+  await configurationHandler.loadConfigFile(FILE_PATH)
   const result = await configurationHandler.save()
-  t.is(fake.calledWith(path.join(process.env.HOME!, '.launcherConfig.json'), JSON.stringify(INPUT_SCHEMA, undefined, '\t'),
+  t.is(fake.calledWith(FILE_PATH, JSON.stringify(INPUT_SCHEMA, undefined, '\t'),
     { encoding: 'utf8' }), true)
   sinon.restore()
+  sinon.restore()
 })
-test('It should be able to load the default config file correctly', async (t) => {
+test.serial('It should be able to load the default config file correctly', async (t) => {
   const fake = sinon.fake.resolves(JSON.stringify(INPUT_SCHEMA))
   sinon.replace(fs.promises, 'readFile', fake)
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
   await configurationHandler.loadDefaultConfigFile()
   t.deepEqual(configurationHandler.configuration, INPUT_SCHEMA)
+  sinon.restore()
 })
-test('It should be able get the config file path correctly', async (t) => {
+test.serial('It should be able get the config file path correctly', async (t) => {
+  const fake = sinon.fake.resolves(JSON.stringify(INPUT_SCHEMA))
+  sinon.replace(fs.promises, 'readFile', fake)
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
+  await configurationHandler.loadConfigFile(FILE_PATH)
   const result = await configurationHandler.getConfigFilePath()
-  t.is(result, path.join(process.env.HOME!, '.launcherConfig.json'))
+  t.is(result, FILE_PATH)
+  sinon.restore()
 })

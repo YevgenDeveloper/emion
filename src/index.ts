@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import CFonts from 'cfonts'
 import Vorpal from 'vorpal'
 import { getConfigHandler } from './configurationHandler'
@@ -6,17 +7,17 @@ import EnvironmentsRunner from './environmentsRunner'
 import GitHandler from './gitHandler'
 import { vorpalLog } from './utils'
 const v: Vorpal = new Vorpal()
-const run = async () => {
+const run = async (configFilePath: string) => {
   try {
     await plugInExitHandler()
-    await initializeCommands()
-    await start()
+    await initializeCommands(configFilePath)
+    await start(configFilePath)
   } catch (e) {
     vorpalLog(v, `An error occured: ${e.toString()}`)
     v.exec('exit')
   }
 }
-async function initializeCommands() {
+async function initializeCommands(configFilePath: string) {
   v.command(
     'config',
     'Configure the different repository to use and their environments (Work in Progress)'
@@ -26,7 +27,7 @@ async function initializeCommands() {
     callback: any
   ) {
     this.log((v as any).chalk.yellow('Configuration of the repositories'))
-    const isConfigFileExisting = getConfigHandler().isConfigFileInitialized()
+    const isConfigFileExisting = getConfigHandler().isConfigFileExisting(configFilePath)
     if (!isConfigFileExisting) {
       try {
         await getConfigHandler().loadDefaultConfigFile()
@@ -86,7 +87,7 @@ async function initializeCommands() {
       callback()
     } as Vorpal.Action)
 }
-async function start() {
+async function start(configFilePath: string) {
   v.show()
   const prettyFont = CFonts.render('Environments|Orchestrator', {
     font: 'chrome', 
@@ -99,11 +100,11 @@ async function start() {
     maxLength: '0' 
   })
   vorpalLog(v, prettyFont.string)
-  const isConfigFileExisting = getConfigHandler().isConfigFileInitialized()
+  const isConfigFileExisting = getConfigHandler().isConfigFileExisting(configFilePath)
   if (!isConfigFileExisting) {
     await v.exec('config')
   }
-  await getConfigHandler().loadConfigFile()
+  await getConfigHandler().loadConfigFile(configFilePath)
   vorpalLog(v,
     (v as any).chalk.yellow(
       `Config file is avaible at: ${getConfigHandler().getConfigFilePath()}, \nPlease do not hesitate to edit it directly with VSCode`
@@ -150,4 +151,5 @@ async function plugInExitHandler() {
     await exitHandler({ exit: true }, code)
   })
 }
-run()
+const [nodePath, scriptPath, cfgFilePath] = process.argv
+run(cfgFilePath)
