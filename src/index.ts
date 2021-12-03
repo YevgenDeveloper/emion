@@ -116,7 +116,7 @@ async function start(configFilePath: string) {
   } else {
     await GitHandler.getGitHandler(v).loadRepo(repoPath)
   }
-  const runEnv = process.argv.slice(2)[0]
+  const runEnv = process.argv.slice(3)[0]
   if (runEnv) {
     await GitHandler.getGitHandler(v).synchronise()
     EnvironmentsRunner.getEnvironmentsRunner().initialize(v)

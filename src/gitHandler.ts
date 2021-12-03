@@ -37,7 +37,11 @@ export default class GitHandler {
   public async synchronise() {
     const repositories = getConfigHandler().getRepositoryNames()
     logger.debug('Start updating submodules')
-    await this.currentRepo.submoduleUpdate(['--init', '--force'])
+    try {
+      await this.currentRepo.submoduleUpdate(['--init', '--force'])
+    } catch (e) {
+      logger.debug(e)
+    }
     logger.debug('Updating submodules done')
     for (const repository of repositories) {
       logger.debug(`Starting synchronisation of repo ${repository}`)
