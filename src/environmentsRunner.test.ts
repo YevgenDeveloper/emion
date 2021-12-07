@@ -29,7 +29,10 @@ test('Should log the correct information while executing an environement (TO BE 
   const runner = EnvironmentsRunner.getEnvironmentsRunner()
   runner.initialize(v)
   runner.runEnvironement('testEnv')
-  sinon.assert.calledWithExactly(log.getCall(0), '\u001b[31m[testEnv] STARTING ENVIRONMENT\u001b[39m')
-  sinon.assert.calledWithExactly(log.getCall(1), '\u001b[31m[testEnv] INITIALISATION - START\u001b[39m')
+  const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
+  t.is(log.getCall(0).args.length, 1)
+  t.is(log.getCall(0).args[0].replace(ansiRegex, ''), '[testEnv] STARTING ENVIRONMENT')
+  t.is(log.getCall(1).args.length, 1)
+  t.is(log.getCall(1).args[0].replace(ansiRegex, ''), '[testEnv] INITIALISATION - START')
   t.pass()
 })
