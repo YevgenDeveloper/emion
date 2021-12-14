@@ -1,5 +1,5 @@
 {
-  "$schema": "https://gitlab.com/ArthurCrl/environments-orchestrator/raw/master/json/config.schema.json",
+  "$schema": "https://gitlab.com/ArthurCrl/endymion/raw/master/json/config.schema.json",
   "repositories": {},
   "repoPath": ""
 }
