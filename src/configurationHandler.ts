@@ -1,8 +1,8 @@
+import { IConfigurationSchema, IExecutionEnvironement, IRepositoryConfiguration } from '@/configuration.interface'
+import logger from '@/logger'
+import { logEnd, logStart, LogStartEnd } from '@/utils'
 import fs from 'fs'
 import path from 'path'
-import { IConfigurationSchema, IExecutionEnvironement, IRepositoryConfiguration } from './configuration.interface'
-import logger from './logger'
-import { logEnd, logStart, LogStartEnd } from './utils'
 const fsPromises = fs.promises
 let configHandler: ConfigurationHandler
 const homeFolder = process.env.HOME
@@ -10,7 +10,6 @@ const defaultConfigFilePath = path.join(
   __dirname,
   '../json/config.default.json'
 )
-const schemaFilePath = path.join(__dirname, '../json/config.schema.json')
 export default class ConfigurationHandler {
   public configuration: IConfigurationSchema
   private configFilePath = ''
@@ -87,7 +86,8 @@ export default class ConfigurationHandler {
     )
   }
   @LogStartEnd()
-  public async loadDefaultConfigFile() {
+  public async loadDefaultConfigFile(configFilePath: string) {
+    this.configFilePath = configFilePath
     this.configuration = JSON.parse(await fsPromises.readFile(defaultConfigFilePath, 'utf8'))
   }
   public getConfigFilePath(): string {

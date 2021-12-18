@@ -1,5 +1,5 @@
+import { checkAndparseParametrizedString } from '@/utils'
 import test from 'ava'
-import { checkAndparseParametrizedString } from './utils'
 test('Should be able to check parametrized string', (t) => {
   t.deepEqual(checkAndparseParametrizedString('123 ${port}', '123 456'), {
     port: '456',

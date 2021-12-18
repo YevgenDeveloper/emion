@@ -1,10 +1,10 @@
+import { getConfigHandler } from '@/configurationHandler'
+import logger from '@/logger'
+import { LogStartEnd } from '@/utils'
 import fs from 'fs-extra'
 import path from 'path'
 import simplegit from 'simple-git/promise'
 import Vorpal from 'vorpal'
-import { getConfigHandler } from './configurationHandler'
-import logger from './logger'
-import { LogStartEnd } from './utils'
 let gitHandler: GitHandler
 export default class GitHandler {
   public static getGitHandler(vorpal: Vorpal) {

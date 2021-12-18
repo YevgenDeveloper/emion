@@ -1,5 +1,5 @@
+import envs from '@/env'
 import { createLogger, format, transports } from 'winston'
-import envs from './env'
 const logger = createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: format.combine(

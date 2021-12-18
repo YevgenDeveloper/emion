@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "baseUrl": "",
+    "baseUrl": "./src",
     "outDir": "dist",
     "paths": {
-      "*": [
-        "node_modules/*"
+      "@/*": [
+        "./*"
       ]
     },
     "sourceMap": true,
@@ -15,7 +15,7 @@
     "strictPropertyInitialization": false,
     "stripInternal": true,
     "esModuleInterop": true,
-    "target": "es2015",
+    "target": "es2017",
     "module": "commonjs",
     "moduleResolution": "node",
     "lib": [
@@ -28,7 +28,7 @@
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts", "src/cfonts.d.ts"
   ],
   "exclude": [
     "certs",

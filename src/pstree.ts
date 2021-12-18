@@ -1,6 +1,6 @@
 'use strict'
+import logger from '@/logger'
 import child_process from 'child_process'
-import logger from './logger'
 const spawn = child_process.spawnSync
 export default function childrenOfPid(
   pid: string | number): Array<{}> {

@@ -1,6 +1,6 @@
+import logger from '@/logger'
+import pstree from '@/pstree'
 import Vorpal from 'vorpal'
-import logger from './logger'
-import pstree from './pstree'
 export function checkAndparseParametrizedString(
   check: string,
   stringToCheck: string
