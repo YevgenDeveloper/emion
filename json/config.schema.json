@@ -54,7 +54,7 @@
         "repo_config":{
             "type": "object",
             "additionalProperties": false,
-            "required": ["url", "initCommand", "branch"],
+            "required": ["url", "branch"],
             "properties": {
                 "url": {
                     "description": "The path or url of the repository",

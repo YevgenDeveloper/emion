@@ -1,8 +1,8 @@
+import { IConfigurationSchema } from '@/configuration.interface'
+import ConfigurationHandler from '@/configurationHandler'
 import test from 'ava'
 import fs from 'fs'
 import sinon from 'sinon'
-import { IConfigurationSchema } from './configuration.interface'
-import ConfigurationHandler from './configurationHandler'
 let configurationHandler: ConfigurationHandler
 const INPUT_SCHEMA: IConfigurationSchema = {
   repoPath: 'A_PATH',
@@ -70,6 +70,14 @@ test('It should be able to get an environement from its name', (t) => {
     repo: 'REPO_1',
   })
 })
+test('It should throw in case of unknown environement', (t) => {
+  configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
+  try {
+    const result = configurationHandler.getEnvironment('ENV_UNKOWN')
+  } catch (e) {
+    t.deepEqual(e.message, 'Unknown environement ENV_UNKOWN')
+  }
+})
 test('It should be able to get a repository from its name', (t) => {
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
   const result = configurationHandler.getRepository('REPO_2')
@@ -127,13 +135,12 @@ test.serial('It should be able to save the configuration file correctly', async 
   t.is(fake.calledWith(FILE_PATH, JSON.stringify(INPUT_SCHEMA, undefined, '\t'),
     { encoding: 'utf8' }), true)
   sinon.restore()
-  sinon.restore()
 })
 test.serial('It should be able to load the default config file correctly', async (t) => {
   const fake = sinon.fake.resolves(JSON.stringify(INPUT_SCHEMA))
   sinon.replace(fs.promises, 'readFile', fake)
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
-  await configurationHandler.loadDefaultConfigFile()
+  await configurationHandler.loadDefaultConfigFile('')
   t.deepEqual(configurationHandler.configuration, INPUT_SCHEMA)
   sinon.restore()
 })

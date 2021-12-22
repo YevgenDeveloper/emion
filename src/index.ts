@@ -1,11 +1,11 @@
 #!/usr/bin/env node
+import { getConfigHandler } from '@/configurationHandler'
+import { configureWorkingPath } from '@/configurationSteps'
+import EnvironmentsRunner from '@/environmentsRunner'
+import GitHandler from '@/gitHandler'
+import { vorpalLog } from '@/utils'
 import CFonts from 'cfonts'
 import Vorpal from 'vorpal'
-import { getConfigHandler } from './configurationHandler'
-import { configureRepositories, configureWorkingPath } from './configurationSteps'
-import EnvironmentsRunner from './environmentsRunner'
-import GitHandler from './gitHandler'
-import { vorpalLog } from './utils'
 const v: Vorpal = new Vorpal()
 const run = async (configFilePath: string) => {
   try {
@@ -19,34 +19,23 @@ const run = async (configFilePath: string) => {
 }
 async function initializeCommands(configFilePath: string) {
   v.command(
-    'config',
-    'Configure the different repository to use and their environments (Work in Progress)'
+    'init',
+    'Initialisation of empty configuration file'
   ).action(async function (
     this: Vorpal.CommandInstance,
     args: any,
     callback: any
   ) {
-    this.log((v as any).chalk.yellow('Configuration of the repositories'))
-    const isConfigFileExisting = getConfigHandler().isConfigFileExisting(configFilePath)
-    if (!isConfigFileExisting) {
-      try {
-        await getConfigHandler().loadDefaultConfigFile()
-        const response: any = await this.prompt({
-          type: 'confirm',
-          name: 'configureSetup',
-          message:
-            'No configuration found, do you want to configure one ? (if not, the default one will be used)'
-        })
-        if (response.configureSetup) {
-          await configureWorkingPath(this)
-          await configureRepositories(this)
-        }
-        await getConfigHandler().save()
-      } catch (e) {
-        vorpalLog(v, 'ERROR' + e.toString())
-      }
-    } else {
-      await configureRepositories(this)
+    this.log((v as any).chalk.yellow('Initialisation of empty configuration file'))
+    const response: any = await this.prompt({
+      type: 'confirm',
+      name: 'configureSetup',
+      message:
+        `Do you want to configure blank configuration file at ${configFilePath} ?`
+    })
+    if (response.configureSetup) {
+      await getConfigHandler().loadDefaultConfigFile(configFilePath)
+      await configureWorkingPath(this)
       await getConfigHandler().save()
     }
     callback()
@@ -62,17 +51,22 @@ async function initializeCommands(configFilePath: string) {
     ) {
       await GitHandler.getGitHandler(v).synchronise()
       const envs: string[] = getConfigHandler().getEnvironmentsNames()
-      const response: any = await this.prompt({
-        type: 'list',
-        name: 'env',
-        message: 'Which environment do you want to run ? ',
-        choices: envs
-      })
-      EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
-      await EnvironmentsRunner.getEnvironmentsRunner().runEnvironement(response.env)
-      callback()
+      if (envs.length > 0) {
+        const response: any = await this.prompt({
+          type: 'list',
+          name: 'env',
+          message: 'Which environment do you want to run ? ',
+          choices: envs
+        })
+        EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
+        await EnvironmentsRunner.getEnvironmentsRunner().runEnvironement(response.env)
+        callback()
+      } else {
+        v.log((v as any).chalk.red('No repository with tasks to be run found. Did you edited the configuration file ?'))
+        callback()
+      }
     } as Vorpal.Action)
-  v.command('list', 'List all running environments').action(
+  v.command('running', 'List all running environments').action(
     async function (
       this: Vorpal.CommandInstance,
       args: any,
@@ -86,31 +80,57 @@ async function initializeCommands(configFilePath: string) {
       }
       callback()
     } as Vorpal.Action)
+  v.command('reload', 'Reload the configuration file with last version from disk').action(
+    async function (
+      this: Vorpal.CommandInstance,
+      args: any,
+      callback: any
+    ) {
+      this.log((v as any).chalk.green('Reloading...'))
+      await getConfigHandler().loadConfigFile(configFilePath)
+      this.log((v as any).chalk.green('Done'))
+      callback()
+    } as Vorpal.Action)
 }
 async function start(configFilePath: string) {
   v.show()
-  const prettyFont = CFonts.render('Environments|Orchestrator', {
+  const title = CFonts.render('Endymion', {
     font: 'chrome', 
     align: 'center', 
     colors: ['candy', 'candy', 'candy'], 
     background: 'transparent', 
     letterSpacing: 1, 
     lineHeight: 1, 
-    space: true, 
+    space: false, 
     maxLength: '0' 
   })
-  vorpalLog(v, prettyFont.string)
+  vorpalLog(v, title.string)
+  const subtitle = CFonts.render('A simple Node.js task orchestrator\n', {
+    font: 'console', 
+    align: 'center', 
+    colors: 'white', 
+    background: 'transparent', 
+    letterSpacing: 1, 
+    lineHeight: 1, 
+    space: false, 
+    maxLength: '0' 
+  })
+  vorpalLog(v, subtitle.string)
   const isConfigFileExisting = getConfigHandler().isConfigFileExisting(configFilePath)
   if (!isConfigFileExisting) {
-    await v.exec('config')
+    await v.exec('init')
   }
   await getConfigHandler().loadConfigFile(configFilePath)
   vorpalLog(v,
     (v as any).chalk.yellow(
-      `Config file is avaible at: ${getConfigHandler().getConfigFilePath()}, \nPlease do not hesitate to edit it directly with VSCode`
+      `Config file is avaible at: ${getConfigHandler().getConfigFilePath()}\nEdit it through VSCode to take benefit from autocomplete & documentation`
     )
   )
   const repoPath = getConfigHandler().getRepoPath()
+  if (!repoPath) {
+    v.log((v as any).chalk.red('No folder path defined for execution repository. Exiting...'))
+    await v.exec('exit')
+  }
   if (!GitHandler.getGitHandler(v).isRepoInitialized(repoPath)) {
     await GitHandler.getGitHandler(v).initializeRepo(repoPath)
   } else {

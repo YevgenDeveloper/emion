@@ -16,7 +16,8 @@ export interface IExecutionEnvironement {
   dependsOn?: string[]
   id?: string
   readyWhen?: IReadyWhen
-  repo?: string
+  repo?: string,
+  ready?: boolean
 }
 export interface IReadyWhen {
   portIsUp?: number
