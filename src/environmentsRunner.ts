@@ -1,10 +1,10 @@
-import ChildProcess from 'child_process'
+import ChildProcessEnventsHandlerBuilder from '@/childProcessEventsHandlerBuilder'
+import { IExecutionEnvironement } from '@/configuration.interface'
+import { getConfigHandler } from '@/configurationHandler'
+import { checkAndparseParametrizedString, getEnvLoggerForEnvironement, kill, LogStartEnd, pickRandomColor } from '@/utils'
 import path from 'path'
 import * as portscanner from 'portscanner'
 import Vorpal from 'vorpal'
-import { IExecutionEnvironement } from './configuration.interface'
-import { getConfigHandler } from './configurationHandler'
-import { checkAndparseParametrizedString, getEnvLoggerForEnvironement, kill, LogStartEnd, pickRandomColor } from './utils'
 let runner: EnvironmentsRunner
 export default class EnvironmentsRunner {
   public static getEnvironmentsRunner() {
@@ -64,31 +64,33 @@ export default class EnvironmentsRunner {
           })
           const initCommand = getConfigHandler().getRepository(env.repo!).initCommand
           if (initCommand) {
-            this.logDataForEnv({
-              envName: env.id,
-              color,
-              data: 'INITIALISATION - START'
-            })
-            const cmd = ChildProcess.exec(initCommand, {
-              cwd: path.join(getConfigHandler().getRepoPath(), env.repo!)
-            })
-            cmd.stdout.on('data', (data: any) => {
-              this.logDataForEnv({ envName, color, data })
-            })
-            cmd.stderr.on('data', (data: any) => {
-              this.logDataForEnv({ envName, color, data })
-            })
-            cmd.on('exit', async (code: any) => {
-              this.logDataForEnv({
-                envName,
-                color,
-                data: 'INITIALISATION - END'
+            ChildProcessEnventsHandlerBuilder.aChildProcessEventsHandler()
+              .asExececutedProcess()
+              .withCommand(initCommand)
+              .withCommandCurrentWorkindDir(path.join(getConfigHandler().getRepoPath(), env.repo!))
+              .withOnInitCallBack(() => {
+                this.logDataForEnv({
+                  envName: env.id,
+                  color,
+                  data: 'INITIALISATION - START'
+                })
               })
-              resolve(this.executeEnvironement({ env, color }))
-            })
-            cmd.on('message', (message: any) => {
-              this.logDataForEnv({ envName, color, data: message })
-            })
+              .withOnNewDataFromStandardOutputCallBack((data) => {
+                this.logDataForEnv({ envName, color, data })
+              })
+              .withOnNewDataFromErrorOutputCallBack((data) => {
+                this.logDataForEnv({ envName, color, data })
+              })
+              .withOnExitCallBack((data) => {
+                this.logDataForEnv({
+                  envName,
+                  color,
+                  data: 'INITIALISATION - END'
+                })
+                resolve(this.executeEnvironement({ env, color }))
+              })
+              .build()
+              .execute()
           } else {
             resolve(this.executeEnvironement({ env, color }))
           }
@@ -109,68 +111,63 @@ export default class EnvironmentsRunner {
       if (env.dependsOn && env.dependsOn.length > 0) {
         await Promise.all(env.dependsOn.map((depEnv) => this.runEnvironement(depEnv)))
       }
-      const cmd = env.arguments
-        ? ChildProcess.spawn(env.command!, env.arguments, {
-          cwd: path.join(getConfigHandler().getRepoPath(), env.repo!)
-        })
-        : ChildProcess.exec(env.command!, {
-          cwd: path.join(getConfigHandler().getRepoPath(), env.repo!)
-        })
-      this.runningCommands[cmd.pid] = env
-      env.currentPid = cmd.pid
-      cmd.stdout.on('data', async (data: any) => {
-        this.logDataForEnv({ envName: env.id, color: pickedColor, data })
-        if (env.readyWhen) {
-          if (env.readyWhen.consoleMessageIsFound) {
-            const matchedValue = checkAndparseParametrizedString(
-              env.readyWhen.consoleMessageIsFound,
-              data
-            )
-            if (matchedValue !== null) {
-              this.logDataForEnv({
-                envName: env.id,
-                color: pickedColor,
-                data: `ENVIRONMENT READY ON PORT ${matchedValue.port}`
-              }
+      let builder = ChildProcessEnventsHandlerBuilder.aChildProcessEventsHandler()
+      builder = env.arguments ? builder.asSpawnedProcess() : builder.asExececutedProcess()
+      const pid = await builder
+        .withCommand(env.command!)
+        .withCommandArguments(env.arguments)
+        .withCommandCurrentWorkindDir(path.join(getConfigHandler().getRepoPath(), env.repo!))
+        .withOnNewDataFromStandardOutputCallBack(async (data) => {
+          this.logDataForEnv({ envName: env.id, color: pickedColor, data })
+          if (env.readyWhen) {
+            if (env.readyWhen.consoleMessageIsFound && !env.ready) {
+              const matchedValue = checkAndparseParametrizedString(
+                env.readyWhen.consoleMessageIsFound,
+                data
               )
-              resolve()
+              if (matchedValue !== null) {
+                this.logDataForEnv({
+                  envName: env.id,
+                  color: pickedColor,
+                  data: `ENVIRONMENT READY ON PORT ${matchedValue.port}`
+                }
+                )
+                env.ready = true
+                resolve()
+              }
+            }
+            if (env.readyWhen.portIsUp && !env.ready) {
+              const status = await portscanner.checkPortStatus(
+                env.readyWhen.portIsUp
+              )
+              if (status === 'closed') {
+                this.logDataForEnv({
+                  envName: env.id,
+                  color: pickedColor,
+                  data: `ENVIRONMENT READY ON PORT ${env.readyWhen.portIsUp}`
+                }
+                )
+                env.ready = true
+                resolve()
+              }
             }
           }
-          if (env.readyWhen.portIsUp) {
-            const status = await portscanner.checkPortStatus(
-              env.readyWhen.portIsUp
-            )
-            if (status === 'closed') {
-              this.logDataForEnv({
-                envName: env.id,
-                color: pickedColor,
-                data: `ENVIRONMENT READY ON PORT ${env.readyWhen.portIsUp}`
-              }
-              )
-              resolve()
-            }
+        })
+        .withOnNewDataFromErrorOutputCallBack((data) => {
+          this.logDataForEnv({ envName: env.id, pickedColor, data })
+        })
+        .withOnExitCallBack((code, currentPid) => {
+          if (this.runningCommands[currentPid]) {
+            this.logDataForEnv({ envName: env.id, pickedColor, data: `ENVIRONMENT ENDED WITH CODE ${code}` })
           }
-        }
-      })
-      cmd.stderr.on('data', (data: any) => {
-        this.logDataForEnv({ envName: env.id, pickedColor, data })
-      })
-      cmd.on('exit', (code: any, ...args) => {
-        if (this.runningCommands[cmd.pid]) {
-          this.logDataForEnv({ envName: env.id, pickedColor, data: `ENVIRONMENT ENDED WITH CODE ${code}` })
-        }
-        resolve(code)
-        delete env.currentPid
-        delete this.runningCommands[cmd.pid]
-      })
-      cmd.on('close', (code: any) => {
-        if (this.runningCommands[cmd.pid]) {
-          this.logDataForEnv({ envName: env.id, pickedColor, data: `ENVIRONMENT ENDED WITH CODE ${code}` })
-        }
-        resolve(code)
-        delete env.currentPid
-        delete this.runningCommands[cmd.pid]
-      })
+          resolve(code)
+          delete env.currentPid
+          delete this.runningCommands[currentPid]
+        })
+        .build()
+        .execute()
+      this.runningCommands[pid] = env
+      env.currentPid = pid
     })
   }
 }
