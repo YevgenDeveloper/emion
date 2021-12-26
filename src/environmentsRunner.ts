@@ -1,7 +1,7 @@
 import ChildProcessEnventsHandlerBuilder from '@/childProcessEventsHandlerBuilder'
-import { IExecutionEnvironement } from '@/configuration.interface'
+import { IExecutionEnvironment } from '@/configuration.interface'
 import { getConfigHandler } from '@/configurationHandler'
-import { checkAndparseParametrizedString, getEnvLoggerForEnvironement, kill, LogStartEnd, pickRandomColor } from '@/utils'
+import { checkAndparseParametrizedString, getEnvLoggerForEnvironment, kill, LogStartEnd, pickRandomColor } from '@/utils'
 import path from 'path'
 import * as portscanner from 'portscanner'
 import Vorpal from 'vorpal'
@@ -13,14 +13,14 @@ export default class EnvironmentsRunner {
     }
     return runner
   }
-  private runningCommands: { [key: string]: IExecutionEnvironement }
+  private runningCommands: { [key: string]: IExecutionEnvironment }
   private logDataForEnv: any
   private vorpal: Vorpal
   constructor() {
     this.runningCommands = {}
   }
   public initialize(vorpal: Vorpal) {
-    this.logDataForEnv = getEnvLoggerForEnvironement(vorpal)
+    this.logDataForEnv = getEnvLoggerForEnvironment(vorpal)
     this.vorpal = vorpal
   }
   @LogStartEnd()
@@ -42,7 +42,7 @@ export default class EnvironmentsRunner {
     return this.runningCommands
   }
   @LogStartEnd()
-  public async runEnvironement(envName: string, color?: string) {
+  public async runEnvironment(envName: string, color?: string) {
     return new Promise((resolve, reject) => {
       const env = getConfigHandler().getEnvironment(envName)
       if (!color) {
@@ -87,19 +87,19 @@ export default class EnvironmentsRunner {
                   color,
                   data: 'INITIALISATION - END'
                 })
-                resolve(this.executeEnvironement({ env, color }))
+                resolve(this.executeEnvironment({ env, color }))
               })
               .build()
               .execute()
           } else {
-            resolve(this.executeEnvironement({ env, color }))
+            resolve(this.executeEnvironment({ env, color }))
           }
         }
       }
     })
   }
   @LogStartEnd()
-  public async executeEnvironement(inputs: { env: IExecutionEnvironement, color?: string }) {
+  public async executeEnvironment(inputs: { env: IExecutionEnvironment, color?: string }) {
     const { env, color } = inputs
     let pickedColor: string
     return new Promise(async (resolve, reject) => {
@@ -109,7 +109,7 @@ export default class EnvironmentsRunner {
         pickedColor = color
       }
       if (env.dependsOn && env.dependsOn.length > 0) {
-        await Promise.all(env.dependsOn.map((depEnv) => this.runEnvironement(depEnv)))
+        await Promise.all(env.dependsOn.map((depEnv) => this.runEnvironment(depEnv)))
       }
       let builder = ChildProcessEnventsHandlerBuilder.aChildProcessEventsHandler()
       builder = env.arguments ? builder.asSpawnedProcess() : builder.asExececutedProcess()

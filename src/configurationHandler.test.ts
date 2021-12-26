@@ -56,12 +56,12 @@ test.serial('It should check the initialization fine', (t) => {
   t.is(result, true)
   sinon.restore()
 })
-test('It should return correctly the environement names', (t) => {
+test('It should return correctly the environment names', (t) => {
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
   const result = configurationHandler.getEnvironmentsNames()
   t.deepEqual(result, ['ENV_1', 'ENV_2', 'ENV_3'])
 })
-test('It should be able to get an environement from its name', (t) => {
+test('It should be able to get an environment from its name', (t) => {
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
   const result = configurationHandler.getEnvironment('ENV_2')
   t.deepEqual(result, {
@@ -70,12 +70,12 @@ test('It should be able to get an environement from its name', (t) => {
     repo: 'REPO_1',
   })
 })
-test('It should throw in case of unknown environement', (t) => {
+test('It should throw in case of unknown environment', (t) => {
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
   try {
     const result = configurationHandler.getEnvironment('ENV_UNKOWN')
   } catch (e) {
-    t.deepEqual(e.message, 'Unknown environement ENV_UNKOWN')
+    t.deepEqual(e.message, 'Unknown environment ENV_UNKOWN')
   }
 })
 test('It should be able to get a repository from its name', (t) => {
@@ -102,7 +102,7 @@ test('It should be able to get the path of temp repo', (t) => {
   const result = configurationHandler.getRepoPath()
   t.is(result, 'A_PATH')
 })
-test('It should be able to get all the environements', (t) => {
+test('It should be able to get all the environments', (t) => {
   configurationHandler = new ConfigurationHandler(INPUT_SCHEMA)
   const result = configurationHandler.getEnvironments()
   t.deepEqual(result, {

@@ -1,4 +1,4 @@
-import { IConfigurationSchema, IExecutionEnvironement, IRepositoryConfiguration } from '@/configuration.interface'
+import { IConfigurationSchema, IExecutionEnvironment, IRepositoryConfiguration } from '@/configuration.interface'
 import logger from '@/logger'
 import { logEnd, logStart, LogStartEnd } from '@/utils'
 import fs from 'fs'
@@ -38,10 +38,10 @@ export default class ConfigurationHandler {
     return envs
   }
   @LogStartEnd()
-  public getEnvironments(): { [key: string]: IExecutionEnvironement } {
+  public getEnvironments(): { [key: string]: IExecutionEnvironment } {
     logger.debug(`Using repositories ${JSON.stringify(this.configuration.repositories)}`)
     const repositories = Object.keys(this.configuration.repositories)
-    const finalEnvs: { [key: string]: IExecutionEnvironement } = {}
+    const finalEnvs: { [key: string]: IExecutionEnvironment } = {}
     for (const repo of repositories) {
       const envs = Object.keys(
         this.configuration.repositories[repo].environments
@@ -56,12 +56,12 @@ export default class ConfigurationHandler {
     return finalEnvs
   }
   @LogStartEnd()
-  public getEnvironment(envName: string): IExecutionEnvironement {
+  public getEnvironment(envName: string): IExecutionEnvironment {
     logStart(arguments, 'getEnvironment')
     const envs = this.getEnvironments()
     const env = envs[envName]
     if (!env) {
-      throw new Error(`Unknown environement ${envName}`)
+      throw new Error(`Unknown environment ${envName}`)
     }
     return logEnd(env, 'getEnvironment')
   }

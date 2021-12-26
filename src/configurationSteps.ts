@@ -79,7 +79,7 @@ const configureRepositoryElem = async (inputs: {
         itemList: Object.keys(
           repo.environments
         ),
-        onModify: configureEnvironement,
+        onModify: configureEnvironment,
         onAdd: () => { },
         onDelete: () => { }
       })
@@ -90,7 +90,7 @@ const configureRepositoryElem = async (inputs: {
     }
   }
 }
-const configureEnvironement = async (inputs: {
+const configureEnvironment = async (inputs: {
   commandInstance: Vorpal.CommandInstance
   envName: string
   callback: any
@@ -190,4 +190,4 @@ const configureRepositories = async (
     }
   })
 }
-export { configureRepositories, configureRepository, configureListOfItems, configureEnvironement, configureRepositoryElem, configureWorkingPath }
+export { configureRepositories, configureRepository, configureListOfItems, configureEnvironment, configureRepositoryElem, configureWorkingPath }

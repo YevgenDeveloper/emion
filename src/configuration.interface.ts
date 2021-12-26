@@ -5,11 +5,11 @@ export interface IConfigurationSchema {
 }
 export interface IRepositoryConfiguration {
   branch?: string
-  environments: { [key: string]: IExecutionEnvironement }
+  environments: { [key: string]: IExecutionEnvironment }
   initCommand?: string
   url?: string
 }
-export interface IExecutionEnvironement {
+export interface IExecutionEnvironment {
   currentPid?: number
   arguments?: string[]
   command?: string

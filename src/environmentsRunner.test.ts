@@ -1,5 +1,5 @@
 import ChildProcessEnventsHandler from '@/childProcessEventsHandlers'
-import { IExecutionEnvironement, IRepositoryConfiguration } from '@/configuration.interface'
+import { IExecutionEnvironment, IRepositoryConfiguration } from '@/configuration.interface'
 import ConfigurationHandler from '@/configurationHandler'
 import EnvironmentsRunner from '@/environmentsRunner'
 import test from 'ava'
@@ -9,11 +9,11 @@ test('Should return a runner from the static method', (t) => {
   const result = EnvironmentsRunner.getEnvironmentsRunner()
   t.is(result.constructor.name, 'EnvironmentsRunner')
 })
-function plugInStubs({ env, repo, execFunction, doNotStubExecuteEnvironement }: {
-  env?: IExecutionEnvironement,
+function plugInStubs({ env, repo, execFunction, doNotStubExecuteEnvironment }: {
+  env?: IExecutionEnvironment,
   repo?: IRepositoryConfiguration,
   execFunction?: () => Promise<number>,
-  doNotStubExecuteEnvironement?: boolean
+  doNotStubExecuteEnvironment?: boolean
 }) {
   const stubs: any = {
   }
@@ -33,7 +33,7 @@ function plugInStubs({ env, repo, execFunction, doNotStubExecuteEnvironement }: 
       })
   }
   stubs.log = stub(Vorpal.prototype, 'log').returnsThis()
-  const testEnv: IExecutionEnvironement = env || {
+  const testEnv: IExecutionEnvironment = env || {
     command: 'echo "Haha" && exit 0',
     id: 'testEnv',
     repo: 'testRepo'
@@ -47,8 +47,8 @@ function plugInStubs({ env, repo, execFunction, doNotStubExecuteEnvironement }: 
   }
   stubs.getRepository = stub(ConfigurationHandler.prototype, 'getRepository').returns(testRepo)
   stubs.getRepoPath = stub(ConfigurationHandler.prototype, 'getRepoPath').returns('/')
-  if (!doNotStubExecuteEnvironement) {
-    stubs.executeEnvironement = stub(EnvironmentsRunner.prototype, 'executeEnvironement').resolves(undefined)
+  if (!doNotStubExecuteEnvironment) {
+    stubs.executeEnvironment = stub(EnvironmentsRunner.prototype, 'executeEnvironment').resolves(undefined)
   }
   return stubs
 }
@@ -58,12 +58,12 @@ function restoreMethods(stubs: {
   const keys = Object.keys(stubs)
   keys.forEach((key) => stubs[key].restore())
 }
-test.serial('Should log the correct information while running an environement', async (t) => {
+test.serial('Should log the correct information while running an environment', async (t) => {
   const stubs = plugInStubs({})
   const v: Vorpal = new Vorpal()
   const runner = EnvironmentsRunner.getEnvironmentsRunner()
   runner.initialize(v)
-  await runner.runEnvironement('testEnv')
+  await runner.runEnvironment('testEnv')
   const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
   t.is(stubs.log.getCall(0).args.length, 1)
   t.is(stubs.log.getCall(0).args[0].replace(ansiRegex, ''), '[testEnv] STARTING ENVIRONMENT')
@@ -78,7 +78,7 @@ test.serial('Should log the correct information while running an environement', 
   t.pass()
   restoreMethods(stubs)
 })
-test.serial('Should log the correct information while running an environement with no init command', async (t) => {
+test.serial('Should log the correct information while running an environment with no init command', async (t) => {
   const testEnv = {
     command: 'echo "Haha" && exit 0',
     id: 'testEnv',
@@ -95,14 +95,14 @@ test.serial('Should log the correct information while running an environement wi
   const v: Vorpal = new Vorpal()
   const runner = EnvironmentsRunner.getEnvironmentsRunner()
   runner.initialize(v)
-  await runner.runEnvironement('testEnv')
+  await runner.runEnvironment('testEnv')
   const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
   t.is(stubs.log.getCall(0).args.length, 1)
   t.is(stubs.log.getCall(0).args[0].replace(ansiRegex, ''), '[testEnv] STARTING ENVIRONMENT')
   t.pass()
   restoreMethods(stubs)
 })
-test.serial('Should log the correct information while trying to run an already running environement', async (t) => {
+test.serial('Should log the correct information while trying to run an already running environment', async (t) => {
   const stubs = plugInStubs({
     env: {
       command: 'echo "Haha" && exit 0',
@@ -121,26 +121,26 @@ test.serial('Should log the correct information while trying to run an already r
   const v: Vorpal = new Vorpal()
   const runner = EnvironmentsRunner.getEnvironmentsRunner()
   runner.initialize(v)
-  await runner.runEnvironement('testEnv')
+  await runner.runEnvironment('testEnv')
   const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
   t.is(stubs.log.getCall(0).args.length, 1)
   t.is(stubs.log.getCall(0).args[0].replace(ansiRegex, ''), '[testEnv] ENVIRONMENT IS ALREADY RUNNING WITH PID 1')
   t.pass()
   restoreMethods(stubs)
 })
-test.serial('Should log the correct information while executing an environement', async (t) => {
-  const testEnv: IExecutionEnvironement = {
+test.serial('Should log the correct information while executing an environment', async (t) => {
+  const testEnv: IExecutionEnvironment = {
     command: 'echo "Haha" && exit 0',
     id: 'testEnv',
     repo: 'testRepo'
   }
   const stubs = plugInStubs({
-    doNotStubExecuteEnvironement: true
+    doNotStubExecuteEnvironment: true
   })
   const v: Vorpal = new Vorpal()
   const runner = EnvironmentsRunner.getEnvironmentsRunner()
   runner.initialize(v)
-  await runner.executeEnvironement({ env: testEnv, color: 'red' })
+  await runner.executeEnvironment({ env: testEnv, color: 'red' })
   const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
   t.is(stubs.log.getCall(0).args.length, 1)
   t.is(stubs.log.getCall(0).args[0].replace(ansiRegex, ''), '[testEnv] Standard Output')
@@ -149,8 +149,8 @@ test.serial('Should log the correct information while executing an environement'
   t.pass()
   restoreMethods(stubs)
 })
-test.serial('Should log the correct information while executing an environement that waits for a console mesage', async (t) => {
-  const testEnv: IExecutionEnvironement = {
+test.serial('Should log the correct information while executing an environment that waits for a console mesage', async (t) => {
+  const testEnv: IExecutionEnvironment = {
     command: 'echo "Haha" && exit 0',
     id: 'testEnv',
     repo: 'testRepo',
@@ -159,7 +159,7 @@ test.serial('Should log the correct information while executing an environement 
     }
   }
   const stubs = plugInStubs({
-    doNotStubExecuteEnvironement: true,
+    doNotStubExecuteEnvironment: true,
     env: testEnv,
     execFunction: async function f(this: ChildProcessEnventsHandler) {
       if (this.onInit) {
@@ -175,7 +175,7 @@ test.serial('Should log the correct information while executing an environement 
   const v: Vorpal = new Vorpal()
   const runner = EnvironmentsRunner.getEnvironmentsRunner()
   runner.initialize(v)
-  await runner.executeEnvironement({ env: testEnv })
+  await runner.executeEnvironment({ env: testEnv })
   const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
   t.is(stubs.log.getCall(0).args.length, 1)
   t.is(stubs.log.getCall(0).args[0].replace(ansiRegex, ''), '[testEnv] Standard Output 1')
@@ -188,8 +188,8 @@ test.serial('Should log the correct information while executing an environement 
   t.pass()
   restoreMethods(stubs)
 })
-test.serial('Should log the correct information while executing an environement that waits for a port to be up', async (t) => {
-  const testEnv: IExecutionEnvironement = {
+test.serial('Should log the correct information while executing an environment that waits for a port to be up', async (t) => {
+  const testEnv: IExecutionEnvironment = {
     command: 'echo "Haha" && exit 0',
     id: 'testEnv',
     repo: 'testRepo',
@@ -198,7 +198,7 @@ test.serial('Should log the correct information while executing an environement 
     }
   }
   const stubs = plugInStubs({
-    doNotStubExecuteEnvironement: true,
+    doNotStubExecuteEnvironment: true,
     env: testEnv,
     execFunction: async function f(this: ChildProcessEnventsHandler) {
       if (this.onInit) {
@@ -219,7 +219,7 @@ test.serial('Should log the correct information while executing an environement 
   const v: Vorpal = new Vorpal()
   const runner = EnvironmentsRunnerTemp.getEnvironmentsRunner()
   runner.initialize(v)
-  await runner.executeEnvironement({ env: testEnv })
+  await runner.executeEnvironment({ env: testEnv })
   const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
   t.is(stubs.log.getCall(0).args.length, 1)
   t.is(stubs.log.getCall(0).args[0].replace(ansiRegex, ''), '[testEnv] Standard Output 1')

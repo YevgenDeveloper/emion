@@ -59,7 +59,7 @@ async function initializeCommands(configFilePath: string) {
           choices: envs
         })
         EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
-        await EnvironmentsRunner.getEnvironmentsRunner().runEnvironement(response.env)
+        await EnvironmentsRunner.getEnvironmentsRunner().runEnvironment(response.env)
         callback()
       } else {
         v.log((v as any).chalk.red('No repository with tasks to be run found. Did you edited the configuration file ?'))
@@ -140,7 +140,7 @@ async function start(configFilePath: string) {
   if (runEnv) {
     await GitHandler.getGitHandler(v).synchronise()
     EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
-    await EnvironmentsRunner.getEnvironmentsRunner().runEnvironement(runEnv)
+    await EnvironmentsRunner.getEnvironmentsRunner().runEnvironment(runEnv)
     await v.exec('exit')
   } else {
     await v.exec('help')

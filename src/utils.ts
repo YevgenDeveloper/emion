@@ -78,7 +78,7 @@ export function kill(v: Vorpal, pid: string, signal?: string, callback?: any) {
     callback()
   }
 }
-export function getEnvLoggerForEnvironement(vorpal: Vorpal) {
+export function getEnvLoggerForEnvironment(vorpal: Vorpal) {
   return async (inputs: { envName: string, color: string | undefined, data: any }) => {
     const { envName, color, data } = inputs
     if (data) {
