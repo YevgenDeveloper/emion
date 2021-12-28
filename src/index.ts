@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { getConfigHandler } from '@/configurationHandler'
 import { configureWorkingPath } from '@/configurationSteps'
 import EnvironmentsRunner from '@/environmentsRunner'

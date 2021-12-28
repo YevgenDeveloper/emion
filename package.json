@@ -1,5 +1,5 @@
 {
-  "name": "standalone-local",
+  "name": "endymion",
   "version": "0.1.0",
   "description": "A package to run all odyssée back alltogether",
   "main": "index.js",
@@ -56,7 +56,7 @@
     "vuepress-theme-yuu": "^2.2.0"
   },
   "bin": {
-    "endymion": "./dist/index.js"
+    "endymion": "./bin/run.sh"
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
