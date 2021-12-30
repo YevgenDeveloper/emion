@@ -86,7 +86,7 @@ export function getEnvLoggerForEnvironment(vorpal: Vorpal) {
       if (dataToPrint) {
         const chunks = dataToPrint.split('\n')
         for (const chunk of chunks) {
-          logger.info(chunk)
+          logger.debug(chunk)
           vorpal.log(
             (vorpal as any).chalk[color || 'white'](`[${envName.padEnd(6, ' ')}] ${chunk}`)
           )
@@ -123,6 +123,6 @@ export function LogStartEnd(options?: any[]) {
   }
 }
 export function vorpalLog(v: Vorpal, m: string) {
-  logger.info(m)
+  logger.debug(m)
   v.log(m)
 }

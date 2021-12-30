@@ -1,7 +1,7 @@
 import envs from '@/env'
 import { createLogger, format, transports } from 'winston'
 const logger = createLogger({
-  level: process.env.LOG_LEVEL || 'info',
+  level: process.env.LOG_LEVEL || 'error',
   format: format.combine(
     format.timestamp(),
     format.align(),
