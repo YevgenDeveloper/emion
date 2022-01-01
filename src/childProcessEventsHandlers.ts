@@ -41,11 +41,6 @@ export default class ChildProcessEnventsHandler {
         await this.onExit(code, this.childProcessId)
       }
     })
-    cmd.on('close', async (code: number) => {
-      if (this.onExit) {
-        await this.onExit(code, this.childProcessId)
-      }
-    })
     return this.childProcessId
   }
 }
