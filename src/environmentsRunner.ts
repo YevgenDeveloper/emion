@@ -85,9 +85,13 @@ export default class EnvironmentsRunner {
                 this.logDataForEnv({
                   envName,
                   color,
-                  data: 'INITIALISATION - END'
+                  data: `INITIALISATION - END (with code ${data})`
                 })
-                resolve(this.executeEnvironment({ env, color }))
+                if (data === 0) {
+                  resolve(this.executeEnvironment({ env, color }))
+                } else {
+                  reject(`${envName} initialisation failed with code ${data}`)
+                }
               })
               .build()
               .execute()

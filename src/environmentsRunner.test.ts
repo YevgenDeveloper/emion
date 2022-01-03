@@ -74,7 +74,7 @@ test.serial('Should log the correct information while running an environment', a
   t.is(stubs.log.getCall(3).args.length, 1)
   t.is(stubs.log.getCall(3).args[0].replace(ansiRegex, ''), '[testEnv] Error Output')
   t.is(stubs.log.getCall(4).args.length, 1)
-  t.is(stubs.log.getCall(4).args[0].replace(ansiRegex, ''), '[testEnv] INITIALISATION - END')
+  t.is(stubs.log.getCall(4).args[0].replace(ansiRegex, ''), '[testEnv] INITIALISATION - END (with code 0)')
   t.pass()
   restoreMethods(stubs)
 })
