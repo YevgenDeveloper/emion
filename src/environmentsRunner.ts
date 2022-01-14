@@ -81,16 +81,25 @@ export default class EnvironmentsRunner {
               .withOnNewDataFromErrorOutputCallBack((data) => {
                 this.logDataForEnv({ envName, color, data })
               })
-              .withOnExitCallBack((data) => {
-                this.logDataForEnv({
-                  envName,
-                  color,
-                  data: `INITIALISATION - END (with code ${data})`
-                })
-                if (data === 0) {
-                  resolve(this.executeEnvironment({ env, color }))
+              .withOnExitCallBack((data, signal) => {
+                if (data !== null) {
+                  this.logDataForEnv({
+                    envName,
+                    color,
+                    data: `INITIALISATION - END (with code ${data})`
+                  })
+                  if (data === 0) {
+                    resolve(this.executeEnvironment({ env, color }))
+                  } else {
+                    reject(`${envName} initialisation failed with code ${data}`)
+                  }
                 } else {
-                  reject(`${envName} initialisation failed with code ${data}`)
+                  this.logDataForEnv({
+                    envName,
+                    color,
+                    data: `INITIALISATION - END (with signal ${signal})`
+                  })
+                  reject(`${envName} initialisation failed with signal ${signal}`)
                 }
               })
               .build()
@@ -160,11 +169,11 @@ export default class EnvironmentsRunner {
         .withOnNewDataFromErrorOutputCallBack((data) => {
           this.logDataForEnv({ envName: env.id, pickedColor, data })
         })
-        .withOnExitCallBack((code, currentPid) => {
+        .withOnExitCallBack((code, signal, currentPid) => {
           if (this.runningCommands[currentPid]) {
             this.logDataForEnv({ envName: env.id, pickedColor, data: `ENVIRONMENT ENDED WITH CODE ${code}` })
           }
-          resolve(code)
+          resolve(code ?? signal)
           delete env.currentPid
           delete this.runningCommands[currentPid]
         })

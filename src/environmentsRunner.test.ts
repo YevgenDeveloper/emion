@@ -28,7 +28,7 @@ function plugInStubs({ env, repo, execFunction, doNotStubExecuteEnvironment }: {
         }
         await this.onNewDataFromStandardOutput('Standard Output', 1)
         await this.onNewDataFromErrorOutput('Error Output', 1)
-        await this.onExit(0, 1)
+        await this.onExit(0, null, 1)
         return 1
       })
   }
@@ -114,7 +114,7 @@ test.serial('Should log the correct information while trying to run an already r
       this.onInit()
       this.onNewDataFromStandardOutput('Standard Output', 1)
       this.onNewDataFromErrorOutput('Error Output', 1)
-      this.onExit(0, 1)
+      this.onExit(0, null, 1)
       return 1
     }
   })
@@ -168,7 +168,7 @@ test.serial('Should log the correct information while executing an environment t
       await this.onNewDataFromStandardOutput('Standard Output 1', 1)
       await this.onNewDataFromStandardOutput('READY on port 1234', 1)
       await this.onNewDataFromStandardOutput('Standard Output 2', 1)
-      await this.onExit(0, 1)
+      await this.onExit(0, null, 1)
       return 1
     }
   })
@@ -206,7 +206,7 @@ test.serial('Should log the correct information while executing an environment t
       }
       await this.onNewDataFromStandardOutput('Standard Output 1', 1)
       await this.onNewDataFromStandardOutput('Standard Output 2', 1)
-      await this.onExit(0, 1)
+      await this.onExit(0, null, 1)
       return 1
     }
   })

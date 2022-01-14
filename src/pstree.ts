@@ -40,7 +40,7 @@ export default function childrenOfPid(
         }
         return row
       } catch (e) {
-        logger.error(e)
+        logger.error('Error: ', e)
       }
     })
     const parents: any = {}

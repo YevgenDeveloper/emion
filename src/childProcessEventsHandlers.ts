@@ -8,7 +8,7 @@ export default class ChildProcessEnventsHandler {
   public onInit: () => void
   public onNewDataFromStandardOutput: (data: any, pid: number) => void
   public onNewDataFromErrorOutput: (data: any, pid: number) => void
-  public onExit: (code: number, pid: number) => void
+  public onExit: (code: number | null, signal: string | null, pid: number) => void
   public async execute(): Promise<number> {
     if (this.onInit) {
       await this.onInit()
@@ -36,9 +36,9 @@ export default class ChildProcessEnventsHandler {
         await this.onNewDataFromErrorOutput(data, this.childProcessId)
       }
     })
-    cmd.on('exit', async (code: number, ...args) => {
+    cmd.on('exit', async (code: number, signal: string, ...args) => {
       if (this.onExit) {
-        await this.onExit(code, this.childProcessId)
+        await this.onExit(code, signal, this.childProcessId)
       }
     })
     return this.childProcessId

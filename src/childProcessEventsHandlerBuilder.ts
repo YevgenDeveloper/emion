@@ -31,7 +31,7 @@ export default class ChildProcessEnventsHandlerBuilder {
     this.eventHandler.onInit = onInitCallBack
     return this
   }
-  public withOnExitCallBack(onExitCallBack: (code: number, pid: number) => void) {
+  public withOnExitCallBack(onExitCallBack: (code: number | null, signal: string | null, pid: number) => void) {
     this.eventHandler.onExit = onExitCallBack
     return this
   }
