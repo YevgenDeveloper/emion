@@ -28,7 +28,7 @@
     ]
   },
   "include": [
-    "src/**/*.ts", "src/cfonts.d.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "certs",

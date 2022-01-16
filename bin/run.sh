@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-node --require ts-node/register --require tsconfig-paths/register src/index.ts $@
+export NODE_ENV=production
+node -r ./dist/tsconfig-paths-bootstrap.js dist/index.js $@
