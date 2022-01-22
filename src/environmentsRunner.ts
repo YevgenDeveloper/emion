@@ -81,26 +81,21 @@ export default class EnvironmentsRunner {
               .withOnNewDataFromErrorOutputCallBack((data) => {
                 this.logDataForEnv({ envName, color, data })
               })
-              .withOnExitCallBack((data, signal) => {
-                if (data !== null) {
+              .withOnExitCallBack((code, signal) => {
+                if (code !== null) {
                   this.logDataForEnv({
                     envName,
                     color,
-                    data: `INITIALISATION - END (with code ${data})`
+                    data: `INITIALISATION - END (with code ${code})`
                   })
-                  if (data === 0) {
-                    resolve(this.executeEnvironment({ env, color }))
-                  } else {
-                    reject(`${envName} initialisation failed with code ${data}`)
-                  }
                 } else {
                   this.logDataForEnv({
                     envName,
                     color,
                     data: `INITIALISATION - END (with signal ${signal})`
                   })
-                  reject(`${envName} initialisation failed with signal ${signal}`)
                 }
+                resolve(this.executeEnvironment({ env, color }))
               })
               .build()
               .execute()
@@ -171,7 +166,11 @@ export default class EnvironmentsRunner {
         })
         .withOnExitCallBack((code, signal, currentPid) => {
           if (this.runningCommands[currentPid]) {
-            this.logDataForEnv({ envName: env.id, pickedColor, data: `ENVIRONMENT ENDED WITH CODE ${code}` })
+            if (code) {
+              this.logDataForEnv({ envName: env.id, pickedColor, data: `ENVIRONMENT ENDED WITH CODE ${code}` })
+            } else {
+              this.logDataForEnv({ envName: env.id, pickedColor, data: `ENVIRONMENT ENDED WITH SIGNAL ${signal}` })
+            }
           }
           resolve(code ?? signal)
           delete env.currentPid
