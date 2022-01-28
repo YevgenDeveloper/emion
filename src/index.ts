@@ -40,9 +40,13 @@ async function initializeCommands(configFilePath: string) {
     callback()
   } as Vorpal.Action)
   v.command(
-    'run',
+    'run [envName] [additionalArgs]',
     'Select an environment to run (with all its dependencies)'
-  ).action(
+  ).autocomplete({
+    async data() {
+      return getConfigHandler().getEnvironmentsNames()
+    }
+  }).action(
     async function (
       this: Vorpal.CommandInstance,
       args: any,
@@ -51,15 +55,23 @@ async function initializeCommands(configFilePath: string) {
       await GitHandler.getGitHandler(v).synchronise()
       const envs: string[] = getConfigHandler().getEnvironmentsNames()
       if (envs.length > 0) {
-        const response: any = await this.prompt({
-          type: 'list',
-          name: 'env',
-          message: 'Which environment do you want to run ? ',
-          choices: envs
-        })
-        EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
-        await EnvironmentsRunner.getEnvironmentsRunner().runEnvironment(response.env)
-        callback()
+        if (args) {
+          EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
+          await EnvironmentsRunner.getEnvironmentsRunner().runEnvironment(
+            { envName: args.envName, args: args.additionalArgs }
+          )
+          callback()
+        } else {
+          const env = (await this.prompt({
+            type: 'list',
+            name: 'env',
+            message: 'Which environment do you want to run ? ',
+            choices: envs
+          })).env as string
+          EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
+          await EnvironmentsRunner.getEnvironmentsRunner().runEnvironment({ envName: env })
+          callback()
+        }
       } else {
         v.log((v as any).chalk.red('No repository with tasks to be run found. Did you edited the configuration file ?'))
         callback()
@@ -139,7 +151,7 @@ async function start(configFilePath: string) {
   if (runEnv) {
     await GitHandler.getGitHandler(v).synchronise()
     EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
-    await EnvironmentsRunner.getEnvironmentsRunner().runEnvironment(runEnv)
+    await EnvironmentsRunner.getEnvironmentsRunner().runEnvironment({ envName: runEnv, args: process.argv.slice(4) })
     await v.exec('exit')
   } else {
     await v.exec('help')

@@ -42,7 +42,7 @@ export default class EnvironmentsRunner {
     return this.runningCommands
   }
   @LogStartEnd()
-  public async runEnvironment(envName: string, color?: string) {
+  public async runEnvironment({envName, color, args }: {envName: string, color?: string, args?: any}) {
     return new Promise((resolve, reject) => {
       const env = getConfigHandler().getEnvironment(envName)
       if (!color) {
@@ -95,20 +95,19 @@ export default class EnvironmentsRunner {
                     data: `INITIALISATION - END (with signal ${signal})`
                   })
                 }
-                resolve(this.executeEnvironment({ env, color }))
+                resolve(this.executeEnvironment({ env, color, args }))
               })
               .build()
               .execute()
           } else {
-            resolve(this.executeEnvironment({ env, color }))
+            resolve(this.executeEnvironment({ env, color, args }))
           }
         }
       }
     })
   }
   @LogStartEnd()
-  public async executeEnvironment(inputs: { env: IExecutionEnvironment, color?: string }) {
-    const { env, color } = inputs
+  public async executeEnvironment({ env, color, args }: { env: IExecutionEnvironment, color?: string, args?: any}) {
     let pickedColor: string
     return new Promise(async (resolve, reject) => {
       if (!color) {
@@ -117,13 +116,17 @@ export default class EnvironmentsRunner {
         pickedColor = color
       }
       if (env.dependsOn && env.dependsOn.length > 0) {
-        await Promise.all(env.dependsOn.map((depEnv) => this.runEnvironment(depEnv)))
+        await Promise.all(env.dependsOn.map((depEnv) => this.runEnvironment({envName: depEnv})))
       }
       let builder = ChildProcessEnventsHandlerBuilder.aChildProcessEventsHandler()
-      builder = env.arguments ? builder.asSpawnedProcess() : builder.asExececutedProcess()
+      let finalArguments = env.arguments ?? []
+      if (args) {
+        finalArguments = finalArguments.concat(args)
+      }
+      builder = finalArguments.length > 0 ? builder.asSpawnedProcess() : builder.asExececutedProcess()
       const pid = await builder
         .withCommand(env.command!)
-        .withCommandArguments(env.arguments)
+        .withCommandArguments(finalArguments)
         .withCommandCurrentWorkindDir(path.join(getConfigHandler().getRepoPath(), env.repo!))
         .withOnNewDataFromStandardOutputCallBack(async (data) => {
           this.logDataForEnv({ envName: env.id, color: pickedColor, data })

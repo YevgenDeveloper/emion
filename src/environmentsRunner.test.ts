@@ -63,7 +63,7 @@ test.serial('Should log the correct information while running an environment', a
   const v: Vorpal = new Vorpal()
   const runner = EnvironmentsRunner.getEnvironmentsRunner()
   runner.initialize(v)
-  await runner.runEnvironment('testEnv')
+  await runner.runEnvironment({ envName: 'testEnv' })
   const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
   t.is(stubs.log.getCall(0).args.length, 1)
   t.is(stubs.log.getCall(0).args[0].replace(ansiRegex, ''), '[testEnv] STARTING ENVIRONMENT')
@@ -95,7 +95,7 @@ test.serial('Should log the correct information while running an environment wit
   const v: Vorpal = new Vorpal()
   const runner = EnvironmentsRunner.getEnvironmentsRunner()
   runner.initialize(v)
-  await runner.runEnvironment('testEnv')
+  await runner.runEnvironment({ envName: 'testEnv' })
   const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
   t.is(stubs.log.getCall(0).args.length, 1)
   t.is(stubs.log.getCall(0).args[0].replace(ansiRegex, ''), '[testEnv] STARTING ENVIRONMENT')
@@ -121,7 +121,7 @@ test.serial('Should log the correct information while trying to run an already r
   const v: Vorpal = new Vorpal()
   const runner = EnvironmentsRunner.getEnvironmentsRunner()
   runner.initialize(v)
-  await runner.runEnvironment('testEnv')
+  await runner.runEnvironment({ envName: 'testEnv' })
   const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
   t.is(stubs.log.getCall(0).args.length, 1)
   t.is(stubs.log.getCall(0).args[0].replace(ansiRegex, ''), '[testEnv] ENVIRONMENT IS ALREADY RUNNING WITH PID 1')
