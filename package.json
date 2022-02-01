@@ -1,7 +1,7 @@
 {
-  "name": "endymion",
-  "version": "0.1.0",
-  "description": "A package to run all odyssée back alltogether",
+  "name": "ndmn",
+  "version": "0.2.0",
+  "description": "A simple cross-platform tasks & process orchestrator",
   "main": "index.js",
   "scripts": {
     "test": "nyc ava ",
