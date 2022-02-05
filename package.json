@@ -3,6 +3,10 @@
   "version": "0.2.0",
   "description": "A simple cross-platform tasks & process orchestrator",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/ArthurCrl/endymion"
+  },
   "scripts": {
     "test": "nyc ava ",
     "test:watch": "nyc ava --watch",
