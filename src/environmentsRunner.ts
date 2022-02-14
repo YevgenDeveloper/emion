@@ -42,7 +42,7 @@ export default class EnvironmentsRunner {
     return this.runningCommands
   }
   @LogStartEnd()
-  public async runEnvironment({envName, color, args }: {envName: string, color?: string, args?: any}) {
+  public async runEnvironment({ envName, color, args }: { envName: string, color?: string, args?: any }) {
     return new Promise((resolve, reject) => {
       const env = getConfigHandler().getEnvironment(envName)
       if (!color) {
@@ -107,7 +107,7 @@ export default class EnvironmentsRunner {
     })
   }
   @LogStartEnd()
-  public async executeEnvironment({ env, color, args }: { env: IExecutionEnvironment, color?: string, args?: any}) {
+  public async executeEnvironment({ env, color, args }: { env: IExecutionEnvironment, color?: string, args?: any }) {
     let pickedColor: string
     return new Promise(async (resolve, reject) => {
       if (!color) {
@@ -116,7 +116,7 @@ export default class EnvironmentsRunner {
         pickedColor = color
       }
       if (env.dependsOn && env.dependsOn.length > 0) {
-        await Promise.all(env.dependsOn.map((depEnv) => this.runEnvironment({envName: depEnv})))
+        await Promise.all(env.dependsOn.map((depEnv) => this.runEnvironment({ envName: depEnv })))
       }
       let builder = ChildProcessEnventsHandlerBuilder.aChildProcessEventsHandler()
       let finalArguments = env.arguments ?? []
@@ -169,7 +169,7 @@ export default class EnvironmentsRunner {
         })
         .withOnExitCallBack((code, signal, currentPid) => {
           if (this.runningCommands[currentPid]) {
-            if (code) {
+            if (code !== null) {
               this.logDataForEnv({ envName: env.id, pickedColor, data: `ENVIRONMENT ENDED WITH CODE ${code}` })
             } else {
               this.logDataForEnv({ envName: env.id, pickedColor, data: `ENVIRONMENT ENDED WITH SIGNAL ${signal}` })
