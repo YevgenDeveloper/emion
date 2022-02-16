@@ -55,7 +55,7 @@ async function initializeCommands(configFilePath: string) {
       await GitHandler.getGitHandler(v).synchronise()
       const envs: string[] = getConfigHandler().getEnvironmentsNames()
       if (envs.length > 0) {
-        if (args) {
+        if (args.envName) {
           EnvironmentsRunner.getEnvironmentsRunner().initialize(v)
           await EnvironmentsRunner.getEnvironmentsRunner().runEnvironment(
             { envName: args.envName, args: args.additionalArgs }
